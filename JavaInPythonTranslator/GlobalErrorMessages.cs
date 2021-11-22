@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace JavaInPythonTranslator
 {
-    internal class LexicalAnalyzer
+    internal class GlobalErrorMessages
     {
+        public readonly static String errorMessage1 = "Некорректный путь до файла";
     }
 }
