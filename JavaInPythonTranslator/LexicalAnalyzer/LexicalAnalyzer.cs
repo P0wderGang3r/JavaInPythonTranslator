@@ -1,44 +1,58 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-
-namespace JavaInPythonTranslator
+﻿namespace JavaInPythonTranslator
 {
     internal static class LexicalAnalyzer
     {
-        private readonly static String defaultPath = "./LexicalClasses.xml";
+        private readonly static String defaultPath = "./LexicalClasses.txt";
         private static bool isCorrectlyInitialized = false;
-        private static XDocument lexicalClasses = new();
+        private static List<LexicalClasses> lexicalClasses = new List<LexicalClasses>();
 
         public static bool getIsCorrectlyInitialized()
         {
             return isCorrectlyInitialized;
         }
 
+        /**Короче, файл LexicalClasses.txt содержит список регулярных выражений, определяющих класс объекта. Единственное - нужно уточнить, что присутствует на выходе лексического анализатора.*/
         public static void initLexicalAnalyzer()
         {
-            //Я не знаю, как в дебаг/релиз папки с соответствующими билдами автоматически закидывать LexicalClasses.xml,
+            //Я не знаю, как в дебаг/релиз папки с соответствующими билдами автоматически закидывать LexicalClasses.txt,
             //оттого при первой компиляции нужно закинуть этот файл в соответствующую папку самостоятельно
             Console.WriteLine("Введите путь до xml файла с лексическими классами.\nВ случае ошибки при чтении данного файла будет использован файл ./LexicalClasses.xml");
 
             try
             {
                 StreamReader lexClasses = new(Console.ReadLine());
-                lexicalClasses = XDocument.Parse(lexClasses.ReadToEnd());
+                String[]? lexicalClassesLinear = lexClasses.ReadToEnd().Replace("\n", "~").Split("~");
+
+                for (int i = 0; i < lexicalClassesLinear.Length; i+=2)
+                {
+                    lexicalClasses.Add(new LexicalClasses(lexicalClassesLinear[i], lexicalClassesLinear[i + 1]));
+                }
+
+                for (int i = 0; i < lexicalClasses.Count; i++)
+                {
+                    Console.WriteLine(lexicalClasses[i].getLexClass() + " " + lexicalClasses[i].getRegEx());
+                }
+
                 isCorrectlyInitialized = true;
-                Console.WriteLine(lexicalClasses);
             } 
             catch
             {
                 try
                 {
                     StreamReader lexClasses = new(defaultPath);
-                    lexicalClasses = XDocument.Parse(lexClasses.ReadToEnd());
+                    String[]? lexicalClassesLinear = lexClasses.ReadToEnd().Replace("\n", "~").Split("~");
+
+                    for (int i = 0; i < lexicalClassesLinear.Length; i += 2)
+                    {
+                        lexicalClasses.Add(new LexicalClasses(lexicalClassesLinear[i], lexicalClassesLinear[i + 1]));
+                    }
+
+                    for (int i = 0; i < lexicalClasses.Count; i++)
+                    {
+                        Console.WriteLine(i + " " + lexicalClasses[i].getLexClass() + " " + lexicalClasses[i].getRegEx());
+                    }
+
                     isCorrectlyInitialized = true;
-                    Console.WriteLine(lexicalClasses);
                 }
                 catch
                 {
