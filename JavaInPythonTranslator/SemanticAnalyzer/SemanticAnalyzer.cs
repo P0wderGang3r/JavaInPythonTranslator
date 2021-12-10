@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JavaInPythonTranslator
+namespace JavaInPythonTranslator.SemanticAnalyzer
 {
-    internal class MorphologicalAnalyzer
+    internal class SemanticAnalyzer
     {
     }
 }
