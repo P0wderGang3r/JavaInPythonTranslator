@@ -53,7 +53,7 @@ namespace JavaInPythonTranslator
                 }
                 //<---
 
-                if (Globals.logVerboseLevel >= 2)
+                if (Globals.logVerboseLevel == 404)
                     for (int i = 0; i < operatorClasses.Count; i += 2)
                     {
                         Console.WriteLine(operatorClasses[i].GetType() + " " + operatorClasses[i].getRegEx());

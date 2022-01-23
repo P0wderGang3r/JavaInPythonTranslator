@@ -23,9 +23,11 @@ namespace JavaInPythonTranslator
             }
             catch
             {
-                inputText.Add("Некорректный путь до файла");
+                inputText.Add(" ");
 
-                Console.WriteLine(inputText);
+                inputText[0] = ("Некорректный путь до файла");
+
+                Console.WriteLine(inputText[0]);
 
                 return inputText;
             }

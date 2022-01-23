@@ -25,7 +25,7 @@ namespace JavaInPythonTranslator
 
             List<String> inputText = Miscelaneous.getInputText(pathToFile);
 
-            if (String.Equals("Некорректный путь до файла", inputText))
+            if (String.Equals("Некорректный путь до файла", inputText[0]))
             {
                 return 1;
             }
@@ -53,6 +53,7 @@ namespace JavaInPythonTranslator
             if (Globals.logVerboseLevel >= 1)
                 for (int i = 0; i < lexList.Count; i++)
                     Console.WriteLine(lexList[i].type + " " + lexList[i].text);
+
 
             //--------------------------Синтаксический анализ----------------------------
 
