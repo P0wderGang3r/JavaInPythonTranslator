@@ -1,16 +1,14 @@
-﻿using System.Text.RegularExpressions;
-
-namespace JavaInPythonTranslator
+﻿namespace JavaInPythonTranslator
 {
     class LexicalClasses
     {
         private String lexClass = "";
-        private Regex regEx;
+        private String regEx;
 
         public LexicalClasses(String lexClass, String regEx)
         {
             this.lexClass = lexClass;
-            this.regEx = new Regex(regEx);
+            this.regEx = new String(regEx);
         }
 
         public String getLexClass()
@@ -18,7 +16,7 @@ namespace JavaInPythonTranslator
             return this.lexClass;
         }
 
-        public Regex getRegEx()
+        public String getRegEx()
         {
             return this.regEx;
         }

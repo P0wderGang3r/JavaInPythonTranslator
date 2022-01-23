@@ -1,69 +1,259 @@
-﻿namespace JavaInPythonTranslator
+﻿using System.Text.RegularExpressions;
+
+namespace JavaInPythonTranslator
 {
     internal static class LexicalAnalyzer
     {
-        private readonly static String defaultPath = "./LexicalClasses.txt";
+        private readonly static String defaultPath = "./LexicalClasses";
         private static bool isCorrectlyInitialized = false;
-        private static List<LexicalClasses> lexicalClasses = new List<LexicalClasses>();
+
+        private static List<LexicalClasses> letterClasses = new();
+        private static List<LexicalClasses> operatorClasses = new();
+        private static List<LexicalClasses> dividerClasses = new();
 
         public static bool getIsCorrectlyInitialized()
         {
             return isCorrectlyInitialized;
         }
 
-        /**Короче, файл LexicalClasses.txt содержит список регулярных выражений, определяющих класс объекта. Единственное - нужно уточнить, что присутствует на выходе лексического анализатора.*/
-        public static void initLexicalAnalyzer()
+        ///<summary>Короче, файлы из папки LexicalClasses содержит список регулярных выражений, определяющих класс объекта.</summary>
+        public static void initLexAnalyzer()
         {
-            //Я не знаю, как в дебаг/релиз папки с соответствующими билдами автоматически закидывать LexicalClasses.txt,
-            //оттого при первой компиляции нужно закинуть этот файл в соответствующую папку самостоятельно
-            Console.WriteLine("Введите путь до xml файла с лексическими классами.\nВ случае ошибки при чтении данного файла будет использован файл ./LexicalClasses.xml");
+            //Пояснение того, где должна быть папка с LexicalClasses
 
             try
             {
-                StreamReader lexClasses = new(Console.ReadLine());
-                String[]? lexicalClassesLinear = lexClasses.ReadToEnd().Replace("\n", "~").Split("~");
+                //--->Заполнение лексических классов, начинающихся с буквы
+                StreamReader lexClasses = new(defaultPath + "/letterClasses.txt");
+                String[]? lexicalClassesLinear = lexClasses.ReadToEnd().Replace("\n", "~").Replace("\r", "").Split("~");
 
-                for (int i = 0; i < lexicalClassesLinear.Length; i+=2)
+                for (int i = 0; i < lexicalClassesLinear.Length; i += 2)
                 {
-                    lexicalClasses.Add(new LexicalClasses(lexicalClassesLinear[i], lexicalClassesLinear[i + 1]));
+                    letterClasses.Add(new LexicalClasses(lexicalClassesLinear[i], lexicalClassesLinear[i + 1]));
                 }
+                //<---
 
-                for (int i = 0; i < lexicalClasses.Count; i++)
+                //--->Заполнение лексических классов, являющихся операторами
+                lexClasses = new(defaultPath + "/operatorClasses.txt");
+                lexicalClassesLinear = lexClasses.ReadToEnd().Replace("\n", "~").Replace("\r", "").Split("~");
+
+                for (int i = 0; i < lexicalClassesLinear.Length; i += 2)
                 {
-                    Console.WriteLine(lexicalClasses[i].getLexClass() + " " + lexicalClasses[i].getRegEx());
+                    operatorClasses.Add(new LexicalClasses(lexicalClassesLinear[i], lexicalClassesLinear[i + 1]));
                 }
+                //<---
+
+                //--->Заполнение лексических классов, являющихся разделителями
+                lexClasses = new(defaultPath + "/dividerClasses.txt");
+                lexicalClassesLinear = lexClasses.ReadToEnd().Replace("\n", "~").Replace("\r", "").Split("~");
+
+                for (int i = 0; i < lexicalClassesLinear.Length; i += 2)
+                {
+                    dividerClasses.Add(new LexicalClasses(lexicalClassesLinear[i], lexicalClassesLinear[i + 1]));
+                }
+                //<---
+
+                if (Globals.logVerboseLevel >= 2)
+                    for (int i = 0; i < operatorClasses.Count; i += 2)
+                    {
+                        Console.WriteLine(operatorClasses[i].GetType() + " " + operatorClasses[i].getRegEx());
+                    }
 
                 isCorrectlyInitialized = true;
-            } 
+            }
             catch
             {
-                try
-                {
-                    StreamReader lexClasses = new(defaultPath);
-                    String[]? lexicalClassesLinear = lexClasses.ReadToEnd().Replace("\n", "~").Split("~");
-
-                    for (int i = 0; i < lexicalClassesLinear.Length; i += 2)
-                    {
-                        lexicalClasses.Add(new LexicalClasses(lexicalClassesLinear[i], lexicalClassesLinear[i + 1]));
-                    }
-
-                    for (int i = 0; i < lexicalClasses.Count; i++)
-                    {
-                        Console.WriteLine(i + " " + lexicalClasses[i].getLexClass() + " " + lexicalClasses[i].getRegEx());
-                    }
-
-                    isCorrectlyInitialized = true;
-                }
-                catch
-                {
-                    Console.WriteLine("Классы лексического анализатора не были найдены.");
-                }
+                Console.WriteLine("Классы лексического анализатора не были найдены.");
             }
         }
 
-        public static void runLexicalAnalyze(String inputFile)
-        {
+        static int row = 0;
+        static int column = 0;
 
+        public static bool runLexScan(List<LexList> lexList, List<String> inputFile)
+        {
+            while (row < inputFile.Count)
+            {
+                while (column < inputFile[row].Length)
+                {
+                    if (letterStart(inputFile, lexList))
+                    { }
+                    else
+                    if (operatorStart(inputFile, lexList))
+                    { }
+                    else
+                    if (numberStart(inputFile, lexList))
+                    { }
+                    else
+                    if (dividerStart(inputFile, lexList))
+                    { }
+                    else
+                    if (Globals.lexSpaces == true && spaceStart(inputFile, lexList))
+                    { }
+                    else
+                        return false;
+
+                    column++;
+                }
+
+                column = 0;
+                row++;
+            }
+            return true;
+        }
+
+        public static bool letterStart(List<String> inputFile, List<LexList> lexList)
+        {
+            String word = "" + inputFile[row][column];
+
+            if (Regex.IsMatch(word, @"[a-zA-Z]"))
+            {
+                column++;
+
+                //Основной цикл прохода по каждой букве и цифре в "слове"
+                while (column < inputFile[row].Length)
+                {
+                    if (Regex.IsMatch("" + inputFile[row][column], @"[A-Za-z0-9]"))
+                    {
+                        word += inputFile[row][column];
+                    }
+                    else
+                        break;
+
+                    column++;
+                }
+                column--;
+
+                //Проверка на зарезервированность слова
+                for (int i = 0; i < letterClasses.Count; i++)
+                {
+                    if (String.Equals(letterClasses[i].getRegEx(), word))
+                    {
+                        lexList.Add(new LexList(letterClasses[i].getLexClass(), word));
+                        return true;
+                    }
+                }
+
+                lexList.Add(new LexList("I3", word));
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool operatorStart(List<String> inputFile, List<LexList> lexList)
+        {
+            String word = "" + inputFile[row][column];
+
+            //Ищем совпадения с операторами типа +
+            for (int i = 0; i < operatorClasses.Count; i++)
+            {
+                if (String.Equals(word, operatorClasses[i].getRegEx()))
+                {
+                    column++;
+
+                    //Ищем унарные операторы типа ++, +=
+                    if (column < inputFile[row].Length)
+                        for (int j = 0; j < operatorClasses.Count; j++)
+                        {
+                            if (String.Equals(word + inputFile[row][column], operatorClasses[j].getRegEx()))
+                            {
+                                lexList.Add(new LexList(operatorClasses[j].getLexClass(), word));
+                                return true;
+                            }
+                        }
+
+                    lexList.Add(new LexList(operatorClasses[i].getLexClass(), word));
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static bool numberStart(List<String> inputFile, List<LexList> lexList)
+        {
+            String word = "" + inputFile[row][column];
+
+            //Ищем целое число
+            if (Regex.IsMatch(word, @"[0-9]"))
+            {
+                column++;
+
+                //Ищем дробное, начинающееся с 0, число
+                if (String.Equals(word, "0"))
+                {
+                    if (column < inputFile[row].Length && String.Equals(word + inputFile[row][column], "."))
+                    {
+                        column++;
+                    }
+                    else
+                    if (column < inputFile[row].Length && Regex.IsMatch("" + inputFile[row][column], @"[0-9]"))
+                    {
+                        lexList.Add(new LexList("E1", word));
+                        return false;
+                    }
+                }
+
+                //Основной цикл прохода по каждой букве и цифре в "слове"
+                while (column < inputFile[row].Length)
+                {
+                    if (Regex.IsMatch("" + inputFile[row][column], @"[0-9]"))
+                    {
+                        word += inputFile[row][column];
+                    }
+                    else
+                        break;
+
+                    column++;
+                }
+                column--;
+
+                lexList.Add(new LexList("NN", word));
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool dividerStart(List<String> inputFile, List<LexList> lexList)
+        {
+            String word = "" + inputFile[row][column];
+
+            //Ищем совпадения с разделителями
+            for (int i = 0; i < dividerClasses.Count; i++)
+            {
+                if (String.Equals(word, dividerClasses[i].getRegEx()))
+                {
+                    lexList.Add(new LexList(dividerClasses[i].getLexClass(), word));
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static bool spaceStart(List<String> inputFile, List<LexList> lexList)
+        {
+            String word = "" + inputFile[row][column];
+
+            //Если пробел, то к следующему числу
+            if (String.Equals(word, " "))
+            {
+                if (column + 1 < inputFile[row].Length)
+                {
+                    while (String.Equals("" + inputFile[row][column], " "))
+                    {
+                        column++;
+                    }
+                    column--;
+                }
+
+                lexList.Add(new LexList("SP", word));
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -1,55 +1,63 @@
-﻿namespace JavaInPythonTranslator
+﻿
+namespace JavaInPythonTranslator
 {
+    struct LexList
+    {
+        public string type;
+        public string text;
+
+        public LexList(string type, string text) : this()
+        {
+            this.type = type;
+            this.text = text;
+        }
+    }
+
     class Program
     {
-
-        static String getInputText(String pathToFile)
-        {
-            String inputText = "Некорректный путь до файла";
-
-            try
-            {
-                StreamReader lexClasses = new(pathToFile);
-                inputText = lexClasses.ReadToEnd();
-            }
-            catch
-            {
-                Console.WriteLine(inputText);
-
-                return inputText;
-            }
-
-            return inputText;
-        }
-
         public static int Main(String[] args)
         {
-            /*
             //-----------------------------Чтение из файла-------------------------------
 
             Console.WriteLine("Введите путь до текстового файла с кодом для трансляции");
 
             String pathToFile = Console.ReadLine();
 
-            String inputText = getInputText(pathToFile);
+            List<String> inputText = Miscelaneous.getInputText(pathToFile);
 
-            if (String.Equals(GlobalErrorMessages.errorMessage1, inputText))
+            if (String.Equals("Некорректный путь до файла", inputText))
             {
                 return 1;
             }
 
+            if (Globals.logVerboseLevel >= 1)
+                for (int i = 0; i < inputText.Count; i++)
+                    Console.WriteLine(inputText[i]);
+
             //---------------------------Лексический анализ------------------------------
-            */
-            LexicalAnalyzer.initLexicalAnalyzer();
+
+            
+            List<LexList> lexList = new();
+
+            LexicalAnalyzer.initLexAnalyzer();
 
             if (!LexicalAnalyzer.getIsCorrectlyInitialized())
             {
                 return 2;
             }
 
-            //LexicalAnalyzer.runLexicalAnalyze(inputText);
+            if (!LexicalAnalyzer.runLexScan(lexList, inputText))
+                return 3;
+
+
+            if (Globals.logVerboseLevel >= 1)
+                for (int i = 0; i < lexList.Count; i++)
+                    Console.WriteLine(lexList[i].type + " " + lexList[i].text);
 
             //--------------------------Синтаксический анализ----------------------------
+
+
+
 
             return 0;
         }
