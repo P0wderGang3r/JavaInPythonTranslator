@@ -16,11 +16,9 @@ namespace JavaInPythonTranslator
             return isCorrectlyInitialized;
         }
 
-        ///<summary>Короче, файлы из папки LexicalClasses содержит список регулярных выражений, определяющих класс объекта.</summary>
+        ///<summary>Короче, файлы из папки LexicalClasses содержат список регулярных выражений, определяющих класс объекта</summary>
         public static void initLexAnalyzer()
         {
-            //Пояснение того, где должна быть папка с LexicalClasses
-
             try
             {
                 //--->Заполнение лексических классов, начинающихся с буквы
@@ -88,7 +86,7 @@ namespace JavaInPythonTranslator
                     if (dividerStart(inputFile, lexList))
                     { }
                     else
-                    if (Globals.lexSpaces == true && spaceStart(inputFile, lexList))
+                    if (spaceStart(inputFile, lexList))
                     { }
                     else
                         return false;
@@ -249,7 +247,9 @@ namespace JavaInPythonTranslator
                     column--;
                 }
 
-                lexList.Add(new LexList("SP", word));
+                if (Globals.lexSpaces == true)
+                    lexList.Add(new LexList("SP", word));
+
                 return true;
             }
 

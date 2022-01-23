@@ -1,6 +1,10 @@
 ﻿
 namespace JavaInPythonTranslator
 {
+    /// <summary>
+    /// <br>type - тип лексемы</br>
+    /// <br>text - содержимое лексемы</br>
+    /// </summary>
     struct LexList
     {
         public string type;
