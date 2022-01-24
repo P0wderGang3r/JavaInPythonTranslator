@@ -43,15 +43,17 @@ namespace JavaInPythonTranslator
             
             List<LexList> lexList = new();
 
-            LexicalAnalyzer.initLexAnalyzer();
-
-            if (!LexicalAnalyzer.getIsCorrectlyInitialized())
+            if (!LexicalAnalyzer.initLexAnalyzer())
             {
+                Console.WriteLine("Ошибка при заполнении лексических классов");
                 return 2;
             }
 
             if (!LexicalAnalyzer.runLexScan(lexList, inputText))
+            {
+                Console.WriteLine("Ошибка при анализе входного текста");
                 return 3;
+            }
 
 
             if (Globals.logVerboseLevel >= 1)

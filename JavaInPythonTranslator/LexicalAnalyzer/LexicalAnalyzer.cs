@@ -11,13 +11,9 @@ namespace JavaInPythonTranslator
         private static List<LexicalClasses> operatorClasses = new();
         private static List<LexicalClasses> dividerClasses = new();
 
-        public static bool getIsCorrectlyInitialized()
-        {
-            return isCorrectlyInitialized;
-        }
 
         ///<summary>Короче, файлы из папки LexicalClasses содержат список регулярных выражений, определяющих класс объекта</summary>
-        public static void initLexAnalyzer()
+        public static bool initLexAnalyzer()
         {
             try
             {
@@ -57,12 +53,13 @@ namespace JavaInPythonTranslator
                         Console.WriteLine(operatorClasses[i].GetType() + " " + operatorClasses[i].getRegEx());
                     }
 
-                isCorrectlyInitialized = true;
+                return true;
             }
             catch
             {
                 Console.WriteLine("Классы лексического анализатора не были найдены.");
             }
+            return false;
         }
 
         static int row = 0;
