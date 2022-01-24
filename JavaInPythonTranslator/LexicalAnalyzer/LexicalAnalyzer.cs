@@ -116,6 +116,11 @@ namespace JavaInPythonTranslator
                         word += inputFile[row][column];
                     }
                     else
+                    if (column < inputFile[row].Length && String.Equals("" + inputFile[row][column], "."))
+                    {
+                        word += inputFile[row][column];
+                    }
+                    else
                         break;
 
                     column++;
@@ -172,20 +177,16 @@ namespace JavaInPythonTranslator
         public static bool numberStart(List<String> inputFile, List<LexList> lexList)
         {
             String word = "" + inputFile[row][column];
+            bool isFractional = false;
 
             //Ищем целое число
             if (Regex.IsMatch(word, @"[0-9]"))
             {
                 column++;
 
-                //Ищем дробное, начинающееся с 0, число
+                //Проверка на то, что число не типа 0<цифра>
                 if (String.Equals(word, "0"))
                 {
-                    if (column < inputFile[row].Length && String.Equals(word + inputFile[row][column], "."))
-                    {
-                        column++;
-                    }
-                    else
                     if (column < inputFile[row].Length && Regex.IsMatch("" + inputFile[row][column], @"[0-9]"))
                     {
                         lexList.Add(new LexList("E1", word));
@@ -199,6 +200,20 @@ namespace JavaInPythonTranslator
                     if (Regex.IsMatch("" + inputFile[row][column], @"[0-9]"))
                     {
                         word += inputFile[row][column];
+                    }
+                    else
+                    if (String.Equals("" + inputFile[row][column], "."))
+                    {
+                        if (!isFractional)
+                        {
+                            word += inputFile[row][column];
+                            isFractional = true;
+                        }
+                        else
+                        {
+                            lexList.Add(new LexList("E1", word));
+                            return false;
+                        }
                     }
                     else
                         break;
