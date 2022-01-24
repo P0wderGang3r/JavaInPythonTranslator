@@ -25,9 +25,7 @@ namespace JavaInPythonTranslator
 
             Console.WriteLine("Введите путь до текстового файла с кодом для трансляции");
 
-            String pathToFile = Console.ReadLine();
-
-            List<String> inputText = Miscelaneous.getInputText(pathToFile);
+            List<String> inputText = Miscelaneous.getInputText(Console.ReadLine());
 
             if (String.Equals("Некорректный путь до файла", inputText[0]))
             {
