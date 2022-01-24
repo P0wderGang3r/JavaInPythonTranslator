@@ -61,7 +61,7 @@ namespace JavaInPythonTranslator
             else
             {
                 pos++;
-                //какой-то блять метод ебаный нихуя сука непонятно блять в пизду нахуй в пизду блять
+                //метод
             }
         }
         #endregion
