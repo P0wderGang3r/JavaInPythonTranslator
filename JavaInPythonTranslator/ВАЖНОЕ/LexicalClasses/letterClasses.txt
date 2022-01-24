@@ -8,9 +8,11 @@ K7~else
 K8~for
 K9~import
 K10~public
-K11~static
-K12~Main
-K13~main
+K11~private
+K12~protected
+K13~static
+K14~Main
+K15~main
 R1~class
 R2~boolean
 R3~byte
