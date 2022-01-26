@@ -175,7 +175,6 @@ namespace JavaInPythonTranslator
                         pos = i;
                         return bodyclassCheck(lexems);
                     }
-                    pos++;
                     if (lexems[pos].id != "D5")
                     {
                         return "Ошибка: \"Ожидалось \'}\'\"";
@@ -188,7 +187,7 @@ namespace JavaInPythonTranslator
             }
         }
         #endregion
-        #region Правило <главная функция> → public static void main (String[] args) { <блок кода> }
+        #region <главная функция> → public static void main (String[] args) { <блок кода> }
         string voidmainCheck(List<lexem> lexems)
         {
             if (lexems[pos].id != "K10")
@@ -313,35 +312,266 @@ namespace JavaInPythonTranslator
         }
         #endregion
         #region Правила объявления переменных
+        #region Правило <тип данных> → boolean | byte | short | char | int | float | double 
+        string dataTypeCheck(List<lexem> lexems)
+        {
+            if ((lexems[pos].id != "R1") ||
+               (lexems[pos].id != "R2") ||
+               (lexems[pos].id != "R3") ||
+               (lexems[pos].id != "R4") ||
+               (lexems[pos].id != "R5") ||
+               (lexems[pos].id != "R6") ||
+               (lexems[pos].id != "R7"))
+            {
+                return "Ошибка: \"Ожидался тип данных\"";
+            }
+            else
+            {
+                return "success";
+            }
+        }
+        #endregion
         #region Правило <тело класса> → <объявление переменной> <тело класса> | <объявление переменной> | <объявление функции> <тело класса> | <объявление функции> | <объявление константы> <тело класса> | <объявление константы> 
         string bodyclassCheck(List<lexem> lexems)
         {
-            pos++;
-
             return "success";
         }
         #endregion
         #region Правило <объявление переменной> → <тип данных переменной> <имя или инициализация>
         string variableDeclarationCheck(List<lexem> lexems)
         {
-            if ((lexems[pos].id != "R1") ||
-                (lexems[pos].id != "R2") ||
-                (lexems[pos].id != "R3") ||
-                (lexems[pos].id != "R4") ||
-                (lexems[pos].id != "R5") ||
-                (lexems[pos].id != "R6") ||
-                (lexems[pos].id != "R7"))
+            int i = pos;
+            if (dataTypeCheck(lexems) != "success")
             {
-                return "Ошибка: \"Ожидался тип данных\"";
+                pos = i;
+                return dataTypeCheck(lexems);
+            }
+            else
+            {
+                pos++;
+                i = pos;
+                if (nameAndRealizationCheck(lexems) != "success")
+                {
+                    pos = i;
+                    return nameAndRealizationCheck(lexems);
+                }
+                else
+                {
+                    return "success";
+                }
+            }
+        }
+        #endregion
+        #region Правило <объявление константы> → const <тип данных переменной> <следующая константа> 
+        string constDeclarationCheck(List<lexem> lexems)
+        {
+            if (lexems[pos].id != "K2")
+            {
+                return "Ошибка: \"Ожидалось \"const\"\"";
             }
             else
             {
                 pos++;
                 int i = pos;
-                if (nameAndRealizationCheck(lexems) != "success")
+                if (dataTypeCheck(lexems) != "success")
                 {
                     pos = i;
-                    return nameAndRealizationCheck(lexems);
+                    return dataTypeCheck(lexems);
+                }
+                else 
+                {
+                    pos++;
+                    return nextConstCheck(lexems);
+                }
+            }
+        }
+        #endregion
+        #region Правило <следующая константа> → <имя переменной> = <значение>, <следующая константа> | <имя переменной> = <значение>;
+        string nextConstCheck(List<lexem> lexems)
+        {
+            if(lexems[pos].id != "I3")
+            {
+                return "Ошибка: \"Ожидалось имя переменной\"";
+            }
+            else
+            {
+                pos++;
+                if (lexems[pos].id != "O23")
+                {
+                    return "Ошибка: \"Ожидалось \'=\'\"";
+                }
+                else
+                {
+                    pos++;
+                    if (lexems[pos].id != "NN")
+                    {
+                        return "Ошибка: \"Ожидалось значение\"";
+                    }
+                    else
+                    {
+                        pos++; 
+                        if ((lexems[pos].id != "D2") || (lexems[pos].id) != "D3")
+                        {
+                            return "Ошибка \"Ожидалось \',\' или \';\'\"";
+                        }
+                        else if (lexems[pos].id == "D2")
+                        {
+                            pos++; 
+                            return nextConstCheck(lexems);
+                        }
+                        else
+                        {
+                            return "success";
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
+        #region Правило <объявление функции> → <тип данных функции> <имя функции> (<параметры функции>) {<тело функции>}
+        string functionDeclarationCheck(List<lexem> lexems)
+        {
+            int i = pos;
+            if ((dataTypeCheck(lexems) != "success") || (lexems[pos].id != "R9"))
+            {
+                pos = i;
+                return dataTypeCheck(lexems);
+            }
+            else
+            {
+                pos++;
+                if (lexems[pos].id != "I3")
+                {
+                    return "Ошибка: \"Ожидалось имя функции\"";
+                }
+                else
+                {
+                    pos++;
+                    if (lexems[pos].id != "D6")
+                    {
+                        return "Ошибка: \"Ожидалось \'(\'\"";
+                    }
+                    else
+                    {
+                        pos++;
+                        i = pos;
+                        if (functionParamsCheck(lexems) != "success")
+                        {
+                            pos = i;
+                            return functionParamsCheck(lexems);
+                        }
+                        else
+                        {
+                            pos++;
+                            if (lexems[pos].id != "D7")
+                            {
+                                return "Ошибка: \"Ожидалось \')\'\"";
+                            }
+                            else
+                            {
+                                pos++;
+                                if (lexems[pos].id != "D4")
+                                {
+                                    return "Ошибка: \"Ожидалось \'{\'\"";
+                                }
+                                else
+                                {
+                                    pos++;
+                                    i = pos;
+                                    if (functionBodyCheck(lexems) != "success")
+                                    {
+                                        pos = i;
+                                        return functionBodyCheck(lexems);
+                                    }
+                                    else
+                                    {
+                                        pos++;
+                                        if (lexems[pos].id != "D5")
+                                        {
+                                            return "Ошибка: \"Ожидалось \'}\'\"";
+                                        }
+                                        else
+                                        {
+                                            return "success";
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
+        #region Правило <параметры функции> → <тип данных переменной> <идентификатор> | <тип данных переменной> <идентификатор>, <параметры функции> 
+        string functionParamsCheck(List<lexem> lexems)
+        {
+            int i = pos;
+            if(dataTypeCheck(lexems) != "success")
+            {
+                pos = i;
+                return dataTypeCheck(lexems);
+            }
+            else
+            {
+                pos++;
+                if (lexems[pos].id != "I3")
+                {
+                    return "Ошибка: \"Ожидалось имя переменной\"";
+                }
+                else
+                {
+                    pos++;
+                    if (lexems[pos].id == "D7")
+                    {
+                        return "success";
+                    }
+                    else
+                    {
+                        return functionParamsCheck(lexems);
+                    }
+                }
+            }
+        }
+        #endregion
+        #region Правило <тело функции> → <блок кода> <возврат значения> | <блок кода>
+        string functionBodyCheck(List<lexem> lexems)
+        {
+            int i = pos;
+            if (mainbodyCheck(lexems) != "success")
+            {
+                pos = i;
+                return mainbodyCheck(lexems);
+            }
+            else
+            {
+                pos++;
+                if (lexems[pos].value == "return")
+                {
+                    return returnCheck(lexems);
+                }
+                else
+                {
+                    pos--;
+                    return "success";
+                }
+
+            }
+        }
+        #endregion
+        #region Правило <возврат значения> → return <выражение>;| return <имя переменной>; | return <имя константы>;
+        string returnCheck(List<lexem> lexems)
+        {
+            if ((lexems[pos].id != "I3") || (expressionCheck(lexems) != "success"))
+            {
+                return "Ошибка: \"Ожидалось возвращаемое значение или выражение\"";
+            }
+            else
+            {
+                pos++;
+                if (lexems[pos].id != "D3")
+                {
+                    return "Ошибка: \"Ожидалось \';\'\"";
                 }
                 else
                 {
@@ -405,12 +635,13 @@ namespace JavaInPythonTranslator
         #endregion
         #endregion
 
-
-        #region Правило <инструкция> → <присваивание>; | <объявление переменной> | <объявление константы> | <вызов функции>; | <выражение>; | <цикл> | <ветвление> | <вывод в консоль>
-        string instructionCheck(List<lexem> lexems)
+        #region Правила выражений
+        #region Правило <выражение> → <арифметическое выражение> | <логическое выражение> | <унарная арифметическая операция> | <значение> | <побитовое выражение>
+        string expressionCheck(List<lexem> lexems)
         {
             return "success";
         }
+        #endregion
         #endregion
     }
 
