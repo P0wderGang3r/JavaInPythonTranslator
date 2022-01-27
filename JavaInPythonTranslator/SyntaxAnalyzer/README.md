@@ -1,4 +1,6 @@
-﻿K1~break
+Используемые лексемы с их идентификаторами
+
+K1~break
 K2~const
 K3~continue
 K4~while
