@@ -3,17 +3,17 @@ namespace JavaInPythonTranslator
 {
     /// <summary>
     /// <br>type - тип лексемы</br>
-    /// <br>text - содержимое лексемы</br>
+    /// <br>value - содержимое лексемы</br>
     /// </summary>
     struct LexList
     {
         public string type;
-        public string text;
+        public string value;
 
-        public LexList(string type, string text) : this()
+        public LexList(string type, string value) : this()
         {
             this.type = type;
-            this.text = text;
+            this.value = value;
         }
     }
 
@@ -58,10 +58,27 @@ namespace JavaInPythonTranslator
 
             if (Globals.logVerboseLevel >= 1)
                 for (int i = 0; i < lexList.Count; i++)
-                    Console.WriteLine(lexList[i].type + " " + lexList[i].text);
+                    Console.WriteLine(lexList[i].type + " " + lexList[i].value);
 
 
             //--------------------------Синтаксический анализ----------------------------
+
+
+            SyntaxAnalyzer analyzer = new SyntaxAnalyzer();
+
+            //Так, для теста
+            Console.WriteLine(analyzer.startRule(lexList));
+
+
+            //--------------------------Семантический анализ-----------------------------
+
+
+
+
+
+            //-----------------------------Генератор кода--------------------------------
+
+
 
 
 
