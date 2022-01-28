@@ -295,14 +295,18 @@ namespace JavaInPythonTranslator
         }
         #endregion
         #region Правило <блок кода> → <инструкция> <блок кода> | <инструкция>;
+
         string mainbodyCheck(List<lexem> lexems)
         {
+
             int i = pos;
+            /*
             if(instructionCheck(lexems) != "success")
             {
                 pos = i;
                 return instructionCheck(lexems);
             }
+            */
             pos++;
             if (lexems[pos].id != "D5")
             {

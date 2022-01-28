@@ -23,6 +23,7 @@ namespace JavaInPythonTranslator
         {
             //-----------------------------Чтение из файла-------------------------------
 
+
             Console.WriteLine("Введите путь до текстового файла с кодом для трансляции");
 
             List<String> inputText = Miscelaneous.getInputText(Console.ReadLine());
@@ -35,6 +36,7 @@ namespace JavaInPythonTranslator
             if (Globals.logVerboseLevel >= 1)
                 for (int i = 0; i < inputText.Count; i++)
                     Console.WriteLine(inputText[i]);
+
 
             //---------------------------Лексический анализ------------------------------
 

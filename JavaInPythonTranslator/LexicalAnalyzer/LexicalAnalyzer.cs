@@ -5,7 +5,6 @@ namespace JavaInPythonTranslator
     internal static class LexicalAnalyzer
     {
         private readonly static String defaultPath = "./LexicalClasses";
-        private static bool isCorrectlyInitialized = false;
 
         private static List<LexicalClasses> letterClasses = new();
         private static List<LexicalClasses> operatorClasses = new();
@@ -175,6 +174,7 @@ namespace JavaInPythonTranslator
         {
             String word = "" + inputFile[row][column];
             bool isFractional = false;
+            String numberType = "NN";
 
             //Ищем целое число
             if (Regex.IsMatch(word, @"[0-9]"))
@@ -203,6 +203,7 @@ namespace JavaInPythonTranslator
                     {
                         if (!isFractional)
                         {
+                            numberType = "NP";
                             word += inputFile[row][column];
                             isFractional = true;
                         }
@@ -219,7 +220,7 @@ namespace JavaInPythonTranslator
                 }
                 column--;
 
-                lexList.Add(new LexList("NN", word));
+                lexList.Add(new LexList(numberType, word));
                 return true;
             }
 
