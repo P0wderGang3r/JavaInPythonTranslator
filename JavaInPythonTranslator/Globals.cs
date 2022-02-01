@@ -16,6 +16,7 @@ namespace JavaInPythonTranslator
         /// </summary>
         public static int logVerboseLevel = 1;
 
+        ///<summary>Переменная, отвечающая за добавление в список токенов пробелов из входного текста.</summary>
         public static bool lexSpaces = false;
     }
 }

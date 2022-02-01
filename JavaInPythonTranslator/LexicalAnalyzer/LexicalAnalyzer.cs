@@ -64,6 +64,7 @@ namespace JavaInPythonTranslator
         static int row = 0;
         static int column = 0;
 
+        ///<summary>Функция - точка входа в лексический анализ входного текста</summary>
         public static bool runLexScan(List<LexList> lexList, List<String> inputFile)
         {
             while (row < inputFile.Count)
@@ -96,6 +97,7 @@ namespace JavaInPythonTranslator
             return true;
         }
 
+        ///<summary>Функция анализа лексических классов, значения которых начинаются с буквы</summary>
         public static bool letterStart(List<String> inputFile, List<LexList> lexList)
         {
             String word = "" + inputFile[row][column];
@@ -140,6 +142,7 @@ namespace JavaInPythonTranslator
             return false;
         }
 
+        ///<summary>Функция анализа лексических классов, значения которых начинаются с оператора</summary>
         public static bool operatorStart(List<String> inputFile, List<LexList> lexList)
         {
             String word = "" + inputFile[row][column];
@@ -170,6 +173,7 @@ namespace JavaInPythonTranslator
             return false;
         }
 
+        ///<summary>Функция анализа лексических классов, значения которых начинаются с цифры</summary>
         public static bool numberStart(List<String> inputFile, List<LexList> lexList)
         {
             String word = "" + inputFile[row][column];
@@ -227,6 +231,7 @@ namespace JavaInPythonTranslator
             return false;
         }
 
+        ///<summary>Функция анализа лексических классов, значения которых начинаются с разделителя из языка Java</summary>
         public static bool dividerStart(List<String> inputFile, List<LexList> lexList)
         {
             String word = "" + inputFile[row][column];
@@ -244,6 +249,7 @@ namespace JavaInPythonTranslator
             return false;
         }
 
+        ///<summary>Функция анализа пробелов, либо исключающая их, либо добавляющая в список в зависимости от глобальной переменной lexSpaces</summary>
         public static bool spaceStart(List<String> inputFile, List<LexList> lexList)
         {
             String word = "" + inputFile[row][column];

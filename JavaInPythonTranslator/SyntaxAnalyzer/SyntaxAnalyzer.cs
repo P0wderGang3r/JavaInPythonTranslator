@@ -48,7 +48,8 @@ namespace JavaInPythonTranslator
         string importCheck(List<LexList> lexems)
         {
             //!!!КОСТЫЛЬ!!!
-            pos++; pos++;
+            pos++;
+            pos++;
             if ((lexems[pos].type == "K10") || (lexems[pos].type == "K11") || (lexems[pos].type == "K12") || (lexems[pos].type == "K13"))
             {
                 pos++;
