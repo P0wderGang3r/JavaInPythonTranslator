@@ -10,12 +10,33 @@ namespace JavaInPythonTranslator
 {
     internal class FunctionRules
     {
+        #region Правило <блок кода> → <инструкция> <блок кода> | <инструкция>
+        public static string blockOfCodeCheck(List<LexList> lexems)
+        {
+            //Нужна проверка на первое вхождение
+            if (!String.Equals(instructionCheck(lexems), successMessage))
+            {
+                return "Ожидалась \"Инструкция\"";
+            }
+            
+            return blockOfCodeCheck(lexems);
+        }
+        #endregion
+
+        #region <инструкция> → <объявление переменной> | <вызов функции> | <присваивание> | <цикл> | <ветвление>
+        static string instructionCheck(List<LexList> lexems)
+        {
+
+            return successMessage;
+        }
+        #endregion
+
 
         #region Правило <объявление функции> → <тип данных функции> <имя функции> (<параметры функции>) {<тело функции>}
         static string functionDeclarationCheck(List<LexList> lexems)
         {
             int i = pos;
-            if ((dataTypeCheck(lexems) != "success") || (lexems[pos].type != "R9"))
+            if ((dataTypeCheck(lexems) != successMessage) || (lexems[pos].type != "R9"))
             {
                 pos = i;
                 return dataTypeCheck(lexems);
@@ -38,7 +59,7 @@ namespace JavaInPythonTranslator
                     {
                         pos++;
                         i = pos;
-                        if (functionParamsCheck(lexems) != "success")
+                        if (functionParamsCheck(lexems) != successMessage)
                         {
                             pos = i;
                             return functionParamsCheck(lexems);
@@ -61,7 +82,7 @@ namespace JavaInPythonTranslator
                                 {
                                     pos++;
                                     i = pos;
-                                    if (functionBodyCheck(lexems) != "success")
+                                    if (functionBodyCheck(lexems) != successMessage)
                                     {
                                         pos = i;
                                         return functionBodyCheck(lexems);
@@ -75,7 +96,7 @@ namespace JavaInPythonTranslator
                                         }
                                         else
                                         {
-                                            return "success";
+                                            return successMessage;
                                         }
                                     }
                                 }
@@ -91,7 +112,7 @@ namespace JavaInPythonTranslator
         static string functionParamsCheck(List<LexList> lexems)
         {
             int i = pos;
-            if (dataTypeCheck(lexems) != "success")
+            if (dataTypeCheck(lexems) != successMessage)
             {
                 pos = i;
                 return dataTypeCheck(lexems);
@@ -108,7 +129,7 @@ namespace JavaInPythonTranslator
                     pos++;
                     if (lexems[pos].type == "D7")
                     {
-                        return "success";
+                        return successMessage;
                     }
                     else
                     {
@@ -120,35 +141,36 @@ namespace JavaInPythonTranslator
         #endregion
 
         #region Правило <тело функции> → <блок кода> <возврат значения> | <блок кода>
-        static string functionBodyCheck(List<LexList> lexems)
+        public static string functionBodyCheck(List<LexList> lexems)
         {
             int i = pos;
-            if (mainbodyCheck(lexems) != "success")
+            if (blockOfCodeCheck(lexems) != successMessage)
             {
                 pos = i;
-                return mainbodyCheck(lexems);
+                return blockOfCodeCheck(lexems);
             }
             else
             {
                 pos++;
                 if (lexems[pos].value == "return")
                 {
-                    return returnCheck(lexems);
+                    return successMessage;//returnCheck(lexems);
                 }
                 else
                 {
                     pos--;
-                    return "success";
+                    return successMessage;
                 }
 
             }
         }
         #endregion
 
+        /*
         #region Правило <возврат значения> → return <выражение>;| return <имя переменной>; | return <имя константы>;
         static string returnCheck(List<LexList> lexems)
         {
-            if ((lexems[pos].type != "I3") || (expressionCheck(lexems) != "success"))
+            if ((lexems[pos].type != "I3") || (expressionCheck(lexems) != successMessage))
             {
                 return "Ошибка: \"Ожидалось возвращаемое значение или выражение\"";
             }
@@ -161,12 +183,12 @@ namespace JavaInPythonTranslator
                 }
                 else
                 {
-                    return "success";
+                    return successMessage;
                 }
             }
         }
         #endregion
-
+        */
         #region <вызов функции> → <начало идентификатора> (<параметры вызова функции>)
 
         #endregion

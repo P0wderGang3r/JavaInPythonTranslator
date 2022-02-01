@@ -3,71 +3,55 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static JavaInPythonTranslator.FunctionRules;
 using static JavaInPythonTranslator.SyntaxGlobals;
-using static JavaInPythonTranslator.EndPoints;
+using static JavaInPythonTranslator.Globals;
 
 
 namespace JavaInPythonTranslator
 {
     static class SyntaxAnalyzer
     {
-
-        #region Правило <программа> → <подключение пакетов> | <объявление класса> 
+        #region <программа> → <подключение пакетов> | <объявление класса> 
         static public string startRule(List<LexList> lexems)
         {
-            if (lexems[pos].type == "K9")
+            if (String.Equals(lexems[pos].type, importClass))
             {
-                pos++;
                 return importCheck(lexems);
-            }
-            else if (lexems[pos].type == "R1")
-            {
-                pos++;
-                return classCheck(lexems);
             }
             else
             {
-                pos++;
-                if ((lexems[pos].type != "R1"))
-                {
-                    return "Ошибка: \"Ожидалось ключевое слово \"class\"\"";
-                }
-                else
-                {
-                    pos++;
-                    return classCheck(lexems);
-                }
+                return classCheck(lexems);
             }
         }
         #endregion
 
-        #region Правило <подключение пакетов> → <подключение пакета> <подключение пакетов> | <объявление класса>
+        #region <подключение пакетов> → K1 <идентификатор> <подключение пакетов> | <объявление класса> 
         static string importCheck(List<LexList> lexems)
         {
-            //!!!КОСТЫЛЬ!!!
-            pos++;
-            pos++;
-            if ((lexems[pos].type == "K10") || (lexems[pos].type == "K11") || (lexems[pos].type == "K12") || (lexems[pos].type == "K13"))
-            {
+            if (lexems[pos].type == importClass)
+            { 
                 pos++;
-                if (lexems[pos].type != "R1")
-                {
-                    return "Ошибка: \"Ожидалось ключевое слово \"class\"\"";
-                }
-                else
-                {
-                    pos++;
-                    return classCheck(lexems);
-                }
             }
-            else if (lexems[pos].type == "R1")
+            else
+                return "Ошибка";
+
+            if (lexems[pos].type == identificator)
             {
                 pos++;
-                return classCheck(lexems);
             }
-            else if (lexems[pos].type == "K9")
+            else
+                return "Ошибка";
+
+            if (lexems[pos].type == D3)
             {
                 pos++;
+            }
+            else
+                return "Ошибка";
+
+            if (String.Equals(lexems[pos].type, importClass))
+            {
                 return importCheck(lexems);
             }
             else
@@ -80,184 +64,116 @@ namespace JavaInPythonTranslator
         #region Правило <объявление класса> → class Main {<главная функция> <тело класса>} | class Main {<главная функция>}
         static string classCheck(List<LexList> lexems)
         {
-            if(lexems[pos].type != "K14")
-            {
-                return "Ошибка: \"Ожидалось \"Main\"\"";
-            }
-            else
-            {
-                pos++;
-                if(lexems[pos].type != "D4")
-                {
-                    return "Ошибка: \"Ожидалось \'{\'\"";
-                }
-                else
-                {
-                    pos++;
-                    int i = pos;
-                    if (voidmainCheck(lexems) != "success")
-                    {
-                        pos = i;
-                        return voidmainCheck(lexems);
-                    }
-                    if (bodyclassCheck(lexems) != "success")
-                    {
-                        pos = i;
-                        return bodyclassCheck(lexems);
-                    }
-                    if (lexems[pos].type != "D5")
-                    {
-                        return "Ошибка: \"Ожидалось \'}\'\"";
-                    }
-                    else
-                    {
-                        return "success";
-                    }
-                }
-            }
-        }
-        #endregion
+            string check;
 
-        #region Правило <тело класса> → <объявление переменной> <тело класса> | <объявление переменной> | <объявление функции> <тело класса> | <объявление функции> | <объявление константы> <тело класса> | <объявление константы> 
-        static string bodyclassCheck(List<LexList> lexems)
-        {
-            //НЕ СДЕЛАНО
-            return "success";
+            check = compare(lexems[pos].type, classClass);
+            if (!String.Equals(check, successMessage))
+                return check;
+
+            check = compare(lexems[pos].type, classMainClass);
+            if (!String.Equals(check, successMessage))
+                return check;
+
+            check = compare(lexems[pos].type, D4);
+            if (!String.Equals(check, successMessage))
+                return check;
+
+            check = voidmainCheck(lexems);
+            if (!String.Equals(check, successMessage))
+            {
+                return "Ошибка: \"Ожидалась главная функция\"";
+            }
+
+            check = bodyclassCheck(lexems);
+             if (!String.Equals(check, "NULL") && !String.Equals(check, successMessage))
+            {
+                return "Ошибка: \"Ожидалось тело класса\"";
+            }
+
+            check = compare(lexems[pos].type, D5);
+            if (!String.Equals(check, successMessage))
+                return check;
+
+            return successMessage;
         }
         #endregion
 
         #region <главная функция> → public static void main (String[] args) { <блок кода> }
         static string voidmainCheck(List<LexList> lexems)
         {
-            if (lexems[pos].type != "K10")
-            {
-                return "Ошибка: \"Ожидалось \"public\"\"";
-            }
-            else
+            string check;
+
+            check = compare(lexems[pos].type, publicClass);
+            if (!String.Equals(check, successMessage))
+                return check;
+
+            check = compare(lexems[pos].type, staticClass);
+            if (!String.Equals(check, successMessage))
+                return check;
+
+            check = compare(lexems[pos].type, voidClass);
+            if (!String.Equals(check, successMessage))
+                return check;
+
+            check = compare(lexems[pos].type, funcMainClass);
+            if (!String.Equals(check, successMessage))
+                return check;
+
+            check = compare(lexems[pos].type, D6);
+            if (!String.Equals(check, successMessage))
+                return check;
+
+            check = compare(lexems[pos].type, stringClass);
+            if (!String.Equals(check, successMessage))
+                return check;
+
+            check = compare(lexems[pos].type, D8);
+            if (!String.Equals(check, successMessage))
+                return check;
+
+            check = compare(lexems[pos].type, D6);
+            if (!String.Equals(check, successMessage))
+                return check;
+
+            check = compare(lexems[pos].type, D9);
+            if (!String.Equals(check, successMessage))
+                return check;
+
+            check = lexems[pos].value;
+            if (String.Equals(check, "args"))
             {
                 pos++;
-                if (lexems[pos].type != "K13")
-                {
-                    return "Ошибка: \"Ожидалось \"static\"\"";
-                }
-                else
-                {
-                    pos++;
-                    if (lexems[pos].type != "R9")
-                    {
-                        return "Ошибка: \"Ожидалось \"void\"\"";
-                    }
-                    else
-                    {
-                        pos++;
-                        if (lexems[pos].type != "K15")
-                        {
-                            return "Ошибка: \"Ожидалось \"main\"\"";
-                        }
-                        else
-                        {
-                            pos++;
-                            if (lexems[pos].type != "D6")
-                            {
-                                return "Ошибка: \"Ожидалось \'(\'\"";
-                            }
-                            else
-                            {
-                                pos++;
-                                if (lexems[pos].type != "R10")
-                                {
-                                    return "Ошибка: \"Ожидалось \"String\"\"";
-                                }
-                                else
-                                {
-                                    pos++;
-                                    if (lexems[pos].type != "D8")
-                                    {
-                                        return "Ошибка: \"Ожидалось \'[\'\"";
-                                    }
-                                    else
-                                    {
-                                        pos++;
-                                        if (lexems[pos].type != "D9")
-                                        {
-                                            return "Ошибка: \"Ожидалось \']\'\"";
-                                        }
-                                        else
-                                        {
-                                            pos++;
-                                            if (lexems[pos].value != "args")
-                                            {
-                                                return "Ошибка: \"Ожидалось \"args\"\"";
-                                            }
-                                            else
-                                            {
-                                                pos++;
-                                                if (lexems[pos].type != "D7")
-                                                {
-                                                    return "Ошибка: \"Ожидалось \')\'\"";
-                                                }
-                                                else
-                                                {
-                                                    pos++;
-                                                    if (lexems[pos].type != "D4")
-                                                    {
-                                                        return "Ошибка: \"Ожидалось \'{\'\"";
-                                                    }
-                                                    else
-                                                    {
-                                                        pos++;
-                                                        int i = pos;
-                                                        if (mainbodyCheck(lexems) != "success")
-                                                        {
-                                                            pos = i;
-                                                            return mainbodyCheck(lexems);
-                                                        }
-                                                        if (lexems[pos].type != "D5")
-                                                        {
-                                                            return "Ошибка: \"Ожидалось \'}\'\"";
-                                                        }
-                                                        else
-                                                        {
-                                                            return "success";
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
             }
+            else
+                return "Ошибка: \"Ожидалось \"args\"\"";
+
+            check = compare(lexems[pos].type, D7);
+            if (!String.Equals(check, successMessage))
+                return check;
+
+            check = compare(lexems[pos].type, D4);
+            if (!String.Equals(check, successMessage))
+                return check;
+
+            check = blockOfCodeCheck(lexems);
+            if (!String.Equals(check, successMessage) && !String.Equals(check, "NULL"))
+            {
+                return "Ошибка: \"Ожидалось тело класса\"";
+            }
+
+            check = compare(lexems[pos].type, D5);
+            if (!String.Equals(check, successMessage))
+                return check;
+
+            return successMessage;
         }
         #endregion
 
-        #region Правило <блок кода> → <инструкция> <блок кода> | <инструкция>
-
-        static string mainbodyCheck(List<LexList> lexems)
+        #region Правило <тело класса> → <объявление переменной> <тело класса> | <объявление переменной> | <объявление функции> <тело класса> | <объявление функции> | <объявление константы> <тело класса> | <объявление константы> 
+        static string bodyclassCheck(List<LexList> lexems)
         {
-
-            int i = pos;
-            /*
-            if(instructionCheck(lexems) != "success")
-            {
-                pos = i;
-                return instructionCheck(lexems);
-            }
-            */
-            pos++;
-            if (lexems[pos].type != "D5")
-            {
-                return mainbodyCheck(lexems);
-            }
-            return "success";
+            return successMessage;
         }
-        #endregion
-
-        #region <инструкция> → <объявление переменной> | <вызов функции> | <присваивание> | <цикл> | <ветвление>
-
         #endregion
 
     }

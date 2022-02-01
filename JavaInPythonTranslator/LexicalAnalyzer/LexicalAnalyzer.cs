@@ -1,14 +1,11 @@
 ﻿using System.Text.RegularExpressions;
+using static JavaInPythonTranslator.Globals;
 
 namespace JavaInPythonTranslator
 {
     internal static class LexicalAnalyzer
     {
         private readonly static String defaultPath = "./LexicalClasses";
-
-        private static List<LexicalClasses> letterClasses = new();
-        private static List<LexicalClasses> operatorClasses = new();
-        private static List<LexicalClasses> dividerClasses = new();
 
 
         ///<summary>Короче, файлы из папки LexicalClasses содержат список регулярных выражений, определяющих класс объекта</summary>
@@ -135,7 +132,7 @@ namespace JavaInPythonTranslator
                     }
                 }
 
-                lexList.Add(new LexList("ID", word));
+                lexList.Add(new LexList(identificator, word));
                 return true;
             }
 
@@ -178,7 +175,7 @@ namespace JavaInPythonTranslator
         {
             String word = "" + inputFile[row][column];
             bool isFractional = false;
-            String numberType = "NN";
+            String numberType = wholeNumber;
 
             //Ищем целое число
             if (Regex.IsMatch(word, @"[0-9]"))
@@ -207,7 +204,7 @@ namespace JavaInPythonTranslator
                     {
                         if (!isFractional)
                         {
-                            numberType = "NP";
+                            numberType = fractionaNumber;
                             word += inputFile[row][column];
                             isFractional = true;
                         }

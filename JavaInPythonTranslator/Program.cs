@@ -1,22 +1,6 @@
 ﻿
 namespace JavaInPythonTranslator
 {
-    /// <summary>
-    /// <br>type - тип лексемы</br>
-    /// <br>value - содержимое лексемы</br>
-    /// </summary>
-    struct LexList
-    {
-        public string type;
-        public string value;
-
-        public LexList(string type, string value) : this()
-        {
-            this.type = type;
-            this.value = value;
-        }
-    }
-
     class Program
     {
         public static int Main(String[] args)
@@ -63,11 +47,8 @@ namespace JavaInPythonTranslator
 
             //--------------------------Синтаксический анализ----------------------------
 
-
-            SyntaxAnalyzer analyzer = new SyntaxAnalyzer();
-
             //Так, для теста
-            Console.WriteLine(analyzer.startRule(lexList));
+            Console.WriteLine(SyntaxAnalyzer.startRule(lexList));
 
 
             //--------------------------Семантический анализ-----------------------------
