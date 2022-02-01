@@ -7,4 +7,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="SyntaxAnalyzer\Rules\tsxy2qi2.yvu~" />
+  </ItemGroup>
+
 </Project>

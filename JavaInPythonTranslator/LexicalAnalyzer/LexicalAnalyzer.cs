@@ -135,7 +135,7 @@ namespace JavaInPythonTranslator
                     }
                 }
 
-                lexList.Add(new LexList("I3", word));
+                lexList.Add(new LexList("ID", word));
                 return true;
             }
 

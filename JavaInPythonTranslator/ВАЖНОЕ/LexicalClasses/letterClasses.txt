@@ -21,7 +21,7 @@ R5~int
 R6~float
 R7~double
 R8~char
-R9~void
-R10~String
+R9~String
+R10~void
 R11~true
 R12~false
