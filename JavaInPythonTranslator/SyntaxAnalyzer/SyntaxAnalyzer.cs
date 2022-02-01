@@ -19,16 +19,7 @@ namespace JavaInPythonTranslator
         #region Правило <программа> → package <имя текущего пакета> <подключение пакетов> | package <имя текущего пакета> <объявление класса> 
         public string startRule(List<LexList> lexems)
         {
-            if ((lexems[pos].value != "package") && (lexems[pos].type != "K9") && (lexems[pos].type != "R1") && (lexems[pos].type != "K10") && (lexems[pos].type != "K11") && (lexems[pos].type != "K12") && (lexems[pos].type != "K13"))
-            {
-                return "Ошибка: \"Не встречено ключевых слов начала программы\"";
-            }
-            else if (lexems[pos].value == "package")
-            {
-                pos++;
-                return packageCheck(lexems);
-            }
-            else if (lexems[pos].type == "K9")
+            if (lexems[pos].type == "K9")
             {
                 pos++;
                 return importCheck(lexems);
@@ -56,48 +47,34 @@ namespace JavaInPythonTranslator
         #region Правило <подключение пакетов> → <подключение пакета>
         string importCheck(List<LexList> lexems)
         {
-            if (lexems[pos].type != "S2")
+            //!!!КОСТЫЛЬ!!!
+            pos++; pos++;
+            if ((lexems[pos].type == "K10") || (lexems[pos].type == "K11") || (lexems[pos].type == "K12") || (lexems[pos].type == "K13"))
             {
-                return "Ошибка: \"Ожидалось название пакета\"";
+                pos++;
+                if (lexems[pos].type != "R1")
+                {
+                    return "Ошибка: \"Ожидалось ключевое слово \"class\"\"";
+                }
+                else
+                {
+                    pos++;
+                    return classCheck(lexems);
+                }
+            }
+            else if (lexems[pos].type == "R1")
+            {
+                pos++;
+                return classCheck(lexems);
+            }
+            else if (lexems[pos].type == "K9")
+            {
+                pos++;
+                return importCheck(lexems);
             }
             else
             {
-                pos++;
-                if (lexems[pos].type != "D3")
-                {
-                    return "Ошибка: \"Ожидалось \';\'\"";
-                }
-                else 
-                {
-                    pos++;
-                    if ((lexems[pos].type == "K10") || (lexems[pos].type == "K11") || (lexems[pos].type == "K12") || (lexems[pos].type == "K13"))
-                    {
-                        pos++;
-                        if (lexems[pos].type != "R1")
-                        {
-                            return "Ошибка: \"Ожидалось ключевое слово \"class\"\"";
-                        }
-                        else
-                        {
-                            pos++;
-                            return classCheck(lexems);
-                        }
-                    }
-                    else if (lexems[pos].type == "R1")
-                    {
-                        pos++;
-                        return classCheck(lexems);
-                    }
-                    else if (lexems[pos].type == "K9")
-                    {
-                        pos++;
-                        return importCheck(lexems);    
-                    }
-                    else
-                    {
-                        return classCheck(lexems);
-                    }
-                }
+                return classCheck(lexems);
             }
         }
         #endregion
