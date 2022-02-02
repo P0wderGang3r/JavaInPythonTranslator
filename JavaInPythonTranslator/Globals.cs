@@ -87,5 +87,7 @@ namespace JavaInPythonTranslator
         public static string wholeNumber = "NN";
         public static string fractionaNumber = "NP";
         public static string identificator = "ID";
+
+        public static List<TreeNode> treeNodes = new();
     }
 }

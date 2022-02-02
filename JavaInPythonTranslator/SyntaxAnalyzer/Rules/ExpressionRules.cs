@@ -32,7 +32,7 @@ namespace JavaInPythonTranslator
             if (String.Equals(check, successMessage))
                 return check;
 
-            return "Ошибка";
+            return successMessage;
         }
         #endregion
 
@@ -49,7 +49,7 @@ namespace JavaInPythonTranslator
             check = EndPoints.ArithmeticalOperatorCheck(lexems);
             if (!String.Equals(check, successMessage))
             {
-                return check;
+                return successMessage;
             }
             pos++;
 
@@ -119,7 +119,7 @@ namespace JavaInPythonTranslator
             check = EndPoints.LogicalBinaryOperatorCheck(lexems);
             if (String.Equals(check, successMessage))
             {
-                return check;
+                return successMessage;
             }
             pos++;
 

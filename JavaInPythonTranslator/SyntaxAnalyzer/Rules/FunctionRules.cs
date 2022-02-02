@@ -11,7 +11,7 @@ namespace JavaInPythonTranslator
 {
     internal class FunctionRules
     {
-        #region <вызов функции> → <начало идентификатора> (<параметры вызова функции>)
+        #region <вызов функции> → <начало идентификатора> (<параметры вызова функции>);
         public static string callFunctionCheck(List<LexList> lexems)
         {
             string check;
@@ -40,6 +40,10 @@ namespace JavaInPythonTranslator
             if (!String.Equals(check, successMessage))
                 return check;
 
+            check = compare(lexems[pos].type, D3);
+            if (!String.Equals(check, successMessage))
+                return check;
+
             return successMessage;
         }
         #endregion
@@ -49,6 +53,19 @@ namespace JavaInPythonTranslator
         {
             string check;
             bool trigger = false;
+
+            check = expressionCheck(lexems);
+            if (!String.Equals(check, successMessage))
+                return check;
+
+            check = compare(lexems[pos].type, D2);
+            if (!String.Equals(check, successMessage))
+            {
+                return successMessage;
+            }
+            pos++;
+
+            return callFunctionParamsCheck(lexems);
 
             //Проверка на запятую
             check = compare(lexems[pos].type, D2);

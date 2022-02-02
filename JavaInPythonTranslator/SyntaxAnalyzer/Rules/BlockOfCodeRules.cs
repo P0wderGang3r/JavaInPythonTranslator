@@ -59,13 +59,9 @@ namespace JavaInPythonTranslator
 
             pos++;
 
-            check = assignmentCheck(lexems);
-            if (String.Equals(check, successMessage))
-            {
-                return successMessage;
-            }
+            return "Ошибка";
 
-            check = callFunctionCheck(lexems);
+            check = assignmentCheck(lexems);
             if (String.Equals(check, successMessage))
             {
                 return successMessage;
