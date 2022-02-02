@@ -5,31 +5,46 @@ namespace JavaInPythonTranslator
     static internal class AssignmentRules
     {
         #region <присваивание> → <начало идентификатора> <оператор присваивания> <выражение>
-        public static string assignmentCheck(List<LexList> lexems)
+        public static string assignmentCheck(List<LexList> lexems, List<TreeNode> treeNodes)
         {
+            string check;
+
+            //Проверка на наличие идентификатора
+            check = EndPoints.IdentificatorCheck(lexems);
+            if (String.Equals(check, successMessage))
+                treeNodes.Add(new TreeNode(lexems[pos], null));
+            if (!String.Equals(check, successMessage))
+                return check;
+            pos++;
+
+            //Проверка на наличие идентификатора
+            check = EndPoints.AssignmentOperatorCheck(lexems);
+            if (String.Equals(check, successMessage))
+                treeNodes.Add(new TreeNode(lexems[pos], null));
+            if (!String.Equals(check, successMessage))
+            {
+                return check;
+            }
+            pos++;
+
+            //Проверка на наличие выражения после оператора присваивания
+            List<TreeNode> treeNode1 = new();
+            treeNodes.Add(new TreeNode(new LexList(NewTree, NewTree), treeNode1));
+            check = ExpressionRules.expressionCheck(lexems, treeNode1);
+            if (!String.Equals(check, successMessage))
+            {
+                return check;
+            }
+
+            //Проверяем, что следует точка с запятой
+            check = compare(lexems[pos].type, D3);
+            if (String.Equals(check, successMessage))
+                treeNodes.Add(new TreeNode(lexems[pos - 1], null));
+            if (!String.Equals(check, successMessage))
+                return check;
 
             return successMessage;
         }
         #endregion
-
-        #region <выражение> → <арифметическое выражение> | <логическое выражение> | <унарная арифметическая операция> | <значение> | <побитовое выражение>
-        public static string expressionCheck(List<LexList> lexems)
-        {
-            return "success";
-        }
-        #endregion
-
-        #region <арифметическое выражение> → <арифметический операнд> <арифметический оператор> <арифметический операнд> 
-
-        #endregion
-
-        #region <логическое выражение> → !<логический операнд> | <логический операнд> <логический бинарный оператор> <логический операнд> | <логический операнд>
-
-        #endregion
-
-        #region <унарная арифметическая операция> → <начало идентификатора> <унарный арифметический оператор> | <унарный арифметический оператор> <начало идентификатора> | <знак числа> <начало идентификатора> | <знак числа> <число>
-
-        #endregion
-
     }
 }

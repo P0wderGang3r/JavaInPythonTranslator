@@ -69,17 +69,18 @@ namespace JavaInPythonTranslator
                 return successMessage;
             }
 
-            //Костыль
-            return "Ошибка";
 
             treeNodes.Clear();
             pos = startPos;
             //Проверка на операцию присваивания
-            check = assignmentCheck(lexems);
+            check = assignmentCheck(lexems, treeNodes);
             if (String.Equals(check, successMessage))
             {
                 return successMessage;
             }
+
+            //Костыль
+            return "Ошибка";
 
             treeNodes.Clear();
             pos = startPos;

@@ -158,6 +158,7 @@ namespace JavaInPythonTranslator
                         {
                             if (String.Equals(word + inputFile[row][column], operatorClasses[j].getRegEx()))
                             {
+                                word += inputFile[row][column];
                                 lexList.Add(new LexList(operatorClasses[j].getLexClass(), word));
                                 return true;
                             }
