@@ -23,7 +23,7 @@ namespace JavaInPythonTranslator
                 }
 
             if (trigger)
-                return "success";
+                return successMessage;
 
             return "Ошибка: \"Ожидался тип данных\"";
         }
@@ -42,7 +42,7 @@ namespace JavaInPythonTranslator
                 }
 
             if (trigger)
-                return "success";
+                return successMessage;
 
             return "Ошибка: \"Ожидался оператор присваивания\"";
         }
@@ -61,14 +61,14 @@ namespace JavaInPythonTranslator
                 }
 
             if (trigger)
-                return "success";
+                return successMessage;
 
             return "Ошибка: \"Ожидался арифметический оператор\"";
         }
         #endregion
 
         #region <унарный арифметический оператор> → U1 | U2
-        public static string unaryOperatorCheck(List<LexList> lexems)
+        public static string UnaryOperatorCheck(List<LexList> lexems)
         {
             bool trigger = false;
 
@@ -80,14 +80,14 @@ namespace JavaInPythonTranslator
                 }
 
             if (trigger)
-                return "success";
+                return successMessage;
 
             return "Ошибка: \"Ожидался унарный оператор\"";
         }
         #endregion
 
         #region <знак числа> → B1 | B2
-        public static string signOperatorCheck(List<LexList> lexems)
+        public static string SignOperatorCheck(List<LexList> lexems)
         {
             bool trigger = false;
 
@@ -99,14 +99,14 @@ namespace JavaInPythonTranslator
                 }
 
             if (trigger)
-                return "success";
+                return successMessage;
 
             return "Ошибка: \"Ожидался знак числа\"";
         }
         #endregion
 
         #region <оператор сравнения> → S1 | S2 | S3 | S4 | S5 | S6
-        public static string comparisonOperatorCheck(List<LexList> lexems)
+        public static string ComparisonOperatorCheck(List<LexList> lexems)
         {
             bool trigger = false;
 
@@ -118,14 +118,14 @@ namespace JavaInPythonTranslator
                 }
 
             if (trigger)
-                return "success";
+                return successMessage;
 
             return "Ошибка: \"Ожидался оператор сравнения\"";
         }
         #endregion
 
         #region <логический бинарный оператор> → L1 | L2
-        public static string logicalBinaryOperatorCheck(List<LexList> lexems)
+        public static string LogicalBinaryOperatorCheck(List<LexList> lexems)
         {
             bool trigger = false;
 
@@ -137,14 +137,14 @@ namespace JavaInPythonTranslator
                 }
 
             if (trigger)
-                return "success";
+                return successMessage;
 
             return "Ошибка: \"Ожидался бинарный логический оператор\"";
         }
         #endregion
 
         #region <логическое значение> → A1 | A2
-        public static string logicalValueCheck(List<LexList> lexems)
+        public static string LogicalValueCheck(List<LexList> lexems)
         {
             bool trigger = false;
 
@@ -156,14 +156,14 @@ namespace JavaInPythonTranslator
                 }
 
             if (trigger)
-                return "success";
+                return successMessage;
 
             return "Ошибка: \"Ожидалось логическое значение\"";
         }
         #endregion
 
         #region <число> → NN | NP
-        public static string numberValueCheck(List<LexList> lexems)
+        public static string NumberValueCheck(List<LexList> lexems)
         {
             bool trigger = false;
 
@@ -173,14 +173,14 @@ namespace JavaInPythonTranslator
             }
 
             if (trigger)
-                return "success";
+                return successMessage;
 
             return "Ошибка: \"Ожидалось численное значение\"";
         }
         #endregion
 
         #region <идентификатор> → ID
-        public static string identificatorCheck(List<LexList> lexems)
+        public static string IdentificatorCheck(List<LexList> lexems)
         {
             bool trigger = false;
 
@@ -190,14 +190,22 @@ namespace JavaInPythonTranslator
             }
 
             if (trigger)
-                return "success";
+                return successMessage;
 
             return "Ошибка: \"Ожидался идентификатор\"";
         }
         #endregion
 
-        #region Иные идентификаторы
+        #region <значение> → <число> | <строковое значение> | <символьное значение> | <логическое значение>
+        //Пока-что только числа
+        public static string ValueCheck(List<LexList> lexems)
+        {
+            string check = NumberValueCheck(lexems);
+            if (!String.Equals(check, successMessage))
+                return check;
 
+            return successMessage;
+        }
         #endregion
     }
 }

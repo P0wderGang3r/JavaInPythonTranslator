@@ -11,11 +11,15 @@ namespace JavaInPythonTranslator
     static internal class AssignmentRules
     {
         #region <присваивание> → <начало идентификатора> <оператор присваивания> <выражение>
+        public static string assignmentCheck(List<LexList> lexems)
+        {
 
+            return successMessage;
+        }
         #endregion
 
-        #region Правило <выражение> → <арифметическое выражение> | <логическое выражение> | <унарная арифметическая операция> | <значение> | <побитовое выражение>
-        static string expressionCheck(List<LexList> lexems)
+        #region <выражение> → <арифметическое выражение> | <логическое выражение> | <унарная арифметическая операция> | <значение> | <побитовое выражение>
+        public static string expressionCheck(List<LexList> lexems)
         {
             return "success";
         }

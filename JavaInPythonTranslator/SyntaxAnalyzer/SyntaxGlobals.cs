@@ -42,7 +42,7 @@ namespace JavaInPythonTranslator
         public static string classClass = "K14";
         public static string voidClass = "K15";
         public static string returnClass = "K16";
-        public static string stringClass = "T8";
+
 
         public static string D1 = "D1"; //.
         public static string D2 = "D2"; //,
@@ -53,7 +53,11 @@ namespace JavaInPythonTranslator
         public static string D7 = "D7"; //)
         public static string D8 = "D8"; //[
         public static string D9 = "D9"; //]
+
         public static string Q1 = "Q1"; //'
         public static string Q2 = "Q2"; //"
+
+        public static string stringClass = "T8";
+        public static string P1 = "P1"; //=
     }
 }

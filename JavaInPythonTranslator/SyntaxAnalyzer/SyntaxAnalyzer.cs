@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static JavaInPythonTranslator.FunctionRules;
 using static JavaInPythonTranslator.SyntaxGlobals;
 using static JavaInPythonTranslator.Globals;
+using static JavaInPythonTranslator.BlockOfCodeRules;
+using static JavaInPythonTranslator.FunctionRules;
 
 
 namespace JavaInPythonTranslator
@@ -29,26 +30,19 @@ namespace JavaInPythonTranslator
         #region <подключение пакетов> → K1 <идентификатор> <подключение пакетов> | <объявление класса> 
         static string importCheck(List<LexList> lexems)
         {
-            if (lexems[pos].type == importClass)
-            { 
-                pos++;
-            }
-            else
-                return "Ошибка";
+            string check;
 
-            if (lexems[pos].type == identificator)
-            {
-                pos++;
-            }
-            else
-                return "Ошибка";
+            check = compare(lexems[pos].type, importClass);
+            if (!String.Equals(check, successMessage))
+                return check;
 
-            if (lexems[pos].type == D3)
-            {
-                pos++;
-            }
-            else
-                return "Ошибка";
+            check = compare(lexems[pos].type, identificator);
+            if (!String.Equals(check, successMessage))
+                return check;
+
+            check = compare(lexems[pos].type, D3);
+            if (!String.Equals(check, successMessage))
+                return check;
 
             if (String.Equals(lexems[pos].type, importClass))
             {
@@ -103,42 +97,47 @@ namespace JavaInPythonTranslator
         {
             string check;
 
+            //public
             check = compare(lexems[pos].type, publicClass);
             if (!String.Equals(check, successMessage))
                 return check;
 
+            //static
             check = compare(lexems[pos].type, staticClass);
             if (!String.Equals(check, successMessage))
                 return check;
 
+            //void
             check = compare(lexems[pos].type, voidClass);
             if (!String.Equals(check, successMessage))
                 return check;
 
+            //main
             check = compare(lexems[pos].type, funcMainClass);
             if (!String.Equals(check, successMessage))
                 return check;
 
+            //(
             check = compare(lexems[pos].type, D6);
             if (!String.Equals(check, successMessage))
                 return check;
 
+            //String
             check = compare(lexems[pos].type, stringClass);
             if (!String.Equals(check, successMessage))
                 return check;
 
+            //[
             check = compare(lexems[pos].type, D8);
             if (!String.Equals(check, successMessage))
                 return check;
 
-            check = compare(lexems[pos].type, D6);
-            if (!String.Equals(check, successMessage))
-                return check;
-
+            //]
             check = compare(lexems[pos].type, D9);
             if (!String.Equals(check, successMessage))
                 return check;
 
+            //args
             check = lexems[pos].value;
             if (String.Equals(check, "args"))
             {
@@ -147,20 +146,24 @@ namespace JavaInPythonTranslator
             else
                 return "Ошибка: \"Ожидалось \"args\"\"";
 
+            //)
             check = compare(lexems[pos].type, D7);
             if (!String.Equals(check, successMessage))
                 return check;
 
+            //{
             check = compare(lexems[pos].type, D4);
             if (!String.Equals(check, successMessage))
                 return check;
 
+            //блок кода
             check = blockOfCodeCheck(lexems);
             if (!String.Equals(check, successMessage) && !String.Equals(check, "NULL"))
             {
                 return "Ошибка: \"Ожидалось тело класса\"";
             }
 
+            //}
             check = compare(lexems[pos].type, D5);
             if (!String.Equals(check, successMessage))
                 return check;
@@ -175,6 +178,7 @@ namespace JavaInPythonTranslator
             return successMessage;
         }
         #endregion
+
 
     }
 }
