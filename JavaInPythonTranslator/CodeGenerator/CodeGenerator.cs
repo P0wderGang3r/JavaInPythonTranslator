@@ -1,8 +1,6 @@
 ﻿namespace JavaInPythonTranslator
 {
-    internal class CodeGenerator
-    {
-        /*
+    /*
          * ----------------------------------------------------------------------------------------
          * ----------------------------------Генератор кода----------------------------------------
          * 
@@ -11,7 +9,6 @@
          * входную программу на Java в программу на Python при помощи таблицы соотвествия.
          * 
          * ----------------------------------------------------------------------------------------
-         * -------------------------------------Пример---------------------------------------------
          * 
          * Есть нода дерева TreeNode в Globals
          * И есть корень дерева List<TreeNode>
@@ -38,5 +35,46 @@
          * 
          * 
          * */
+
+    internal static class CodeGenerator
+    {
+        // Главная функция генератора кода
+        public static void Generate1(StreamWriter file, List<TreeNode> treeNodes) {
+
+            foreach (TreeNode treeNode in treeNodes)
+            {
+                if (treeNode.nextLevelNodes != null)
+                {
+                    file.WriteLine();
+                    Generate1(file, treeNode.nextLevelNodes);
+                }
+                file.Write(String.Equals(treeNode.lexem.value, "NewTree") ? "" : Translate(treeNode.lexem) + " ");
+            }
+        }
+
+        // Тест, потом удалю
+        public static void Generate2(StreamWriter file, List<TreeNode> treeNodes)
+        {
+            foreach (TreeNode treeNode in treeNodes)
+            {
+                file.Write(String.Equals(treeNode.lexem.value, "NewTree")? "": treeNode.lexem.value + " ");
+            }
+
+            foreach (TreeNode treeNode in treeNodes)
+            {
+                if (treeNode.nextLevelNodes != null)
+                {
+                    file.WriteLine();
+                    Generate2(file, treeNode.nextLevelNodes);
+                }
+            }
+        }
+
+        // Трансляция Java в Python
+        public static string Translate(LexList lexem) {
+            
+            return lexem.value;
+
+        }
     }
 }

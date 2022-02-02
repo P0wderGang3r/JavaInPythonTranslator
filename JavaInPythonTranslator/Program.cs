@@ -10,7 +10,9 @@ namespace JavaInPythonTranslator
 
             Console.WriteLine("Введите путь до текстового файла с кодом для трансляции");
 
-            List<String> inputText = Miscelaneous.getInputText(Console.ReadLine());
+            string inputFile = Console.ReadLine();
+
+            List<String> inputText = Miscelaneous.getInputText(inputFile);
 
             if (String.Equals("Некорректный путь до файла", inputText[0]))
             {
@@ -58,14 +60,13 @@ namespace JavaInPythonTranslator
 
 
 
-
-
             //-----------------------------Генератор кода--------------------------------
-
-
-
-
-
+            string outputPath = "../../../../Output";
+            System.IO.Directory.CreateDirectory(outputPath);
+            using (StreamWriter file = new StreamWriter( outputPath + System.IO.Path.ChangeExtension(inputFile, ".py")))
+            {
+                CodeGenerator.Generate1(file, treeNodes);
+            }
 
             return 0;
         }
