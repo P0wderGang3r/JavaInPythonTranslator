@@ -86,12 +86,16 @@
         {
             foreach (TreeNode treeNode in treeNodes)
             {
+                Console.Write(treeNode.lexem.value + " ");
+            }
+
+            foreach (TreeNode treeNode in treeNodes)
+            {
                 if (treeNode.nextLevelNodes != null)
                 {
                     Console.WriteLine();
                     treeRun(treeNode.nextLevelNodes);
                 }
-                Console.Write(treeNode.lexem.value + " ");
             }
         }
     }

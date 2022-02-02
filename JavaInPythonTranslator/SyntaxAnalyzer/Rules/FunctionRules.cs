@@ -38,7 +38,7 @@ namespace JavaInPythonTranslator
 
             //Проверяем параметры функций
             List<TreeNode> treeNode1 = new List<TreeNode>();
-            treeNodes.Add(new TreeNode(new LexList("", ""), treeNode1));
+            treeNodes.Add(new TreeNode(new LexList(NewTree, NewTree), treeNode1));
             check = callFunctionParamsCheck(lexems, treeNode1);
             if (!String.Equals(check, successMessage))
                 return check;
@@ -61,7 +61,9 @@ namespace JavaInPythonTranslator
             string check;
 
             //Проверка на наличие выражения как подаваемого аргумента в вызываемую функцию
-            check = expressionCheck(lexems, treeNodes);
+            List<TreeNode> treeNode1 = new List<TreeNode>();
+            treeNodes.Add(new TreeNode(new LexList(NewTree, NewTree), treeNode1));
+            check = expressionCheck(lexems, treeNode1);
             if (!String.Equals(check, successMessage))
                 return check;
 
@@ -73,7 +75,6 @@ namespace JavaInPythonTranslator
             {
                 return successMessage;
             }
-            pos++;
 
             return callFunctionParamsCheck(lexems, treeNodes);
         }

@@ -45,7 +45,7 @@ namespace JavaInPythonTranslator
                 return check;
 
             List<TreeNode> treeNode1 = new();
-            treeNodes.Add(new TreeNode(new LexList("", ""), treeNode1));
+            treeNodes.Add(new TreeNode(new LexList(NewTree, NewTree), treeNode1));
             if (String.Equals(lexems[pos].type, importClass))
             {
                 return importCheck(lexems, treeNode1);
@@ -81,7 +81,7 @@ namespace JavaInPythonTranslator
                 return check;
 
             List<TreeNode> treeNode1 = new();
-            treeNodes.Add(new TreeNode(new LexList("", ""), treeNode1));
+            treeNodes.Add(new TreeNode(new LexList(NewTree, NewTree), treeNode1));
             check = voidmainCheck(lexems, treeNode1);
             if (!String.Equals(check, successMessage))
             {
@@ -89,7 +89,7 @@ namespace JavaInPythonTranslator
             }
 
             List<TreeNode> treeNode2 = new();
-            treeNodes.Add(new TreeNode(new LexList("", ""), treeNode2));
+            treeNodes.Add(new TreeNode(new LexList(NewTree, NewTree), treeNode2));
             check = bodyclassCheck(lexems, treeNode2);
             if (!String.Equals(check, "NULL") && !String.Equals(check, successMessage))
             {
@@ -169,11 +169,10 @@ namespace JavaInPythonTranslator
 
             //args
             check = lexems[pos].value;
-            if (String.Equals(check, successMessage))
-                treeNodes.Add(new TreeNode(lexems[pos - 1], null));
             if (String.Equals(check, "args"))
             {
                 pos++;
+                treeNodes.Add(new TreeNode(lexems[pos - 1], null));
             }
             else
                 return "Ошибка: \"Ожидалось \"args\"\"";
@@ -194,7 +193,7 @@ namespace JavaInPythonTranslator
 
             //блок кода
             List<TreeNode> treeNode1 = new();
-            treeNodes.Add(new TreeNode(new LexList("", ""), treeNode1));
+            treeNodes.Add(new TreeNode(new LexList(NewTree, NewTree), treeNode1));
             check = blockOfCodeCheck(lexems, treeNode1);
             if (!String.Equals(check, successMessage) && !String.Equals(check, "NULL"))
             {

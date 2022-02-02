@@ -58,49 +58,51 @@ namespace JavaInPythonTranslator
 
             check = EndPoints.UnaryOperatorCheck(lexems);
             if (String.Equals(check, successMessage))
-                treeNodes.Add(new TreeNode(lexems[pos], null));
-            if (String.Equals(check, successMessage))
             {
                 pos++;
                 check = EndPoints.IdentificatorCheck(lexems);
                 if (String.Equals(check, successMessage))
+                {
+                    treeNodes.Add(new TreeNode(lexems[pos - 1], null));
                     treeNodes.Add(new TreeNode(lexems[pos], null));
-                if (String.Equals(check, successMessage))
                     return successMessage;
+                }
                 pos--;
             }
 
             check = EndPoints.IdentificatorCheck(lexems);
             if (String.Equals(check, successMessage))
-                treeNodes.Add(new TreeNode(lexems[pos], null));
-            if (String.Equals(check, successMessage))
             {
                 pos++;
                 check = EndPoints.UnaryOperatorCheck(lexems);
                 if (String.Equals(check, successMessage))
+                {
+                    treeNodes.Add(new TreeNode(lexems[pos - 1], null));
                     treeNodes.Add(new TreeNode(lexems[pos], null));
-                if (String.Equals(check, successMessage))
                     return successMessage;
+                }
                 pos--;
             }
 
             check = EndPoints.SignOperatorCheck(lexems);
             if (String.Equals(check, successMessage))
-                treeNodes.Add(new TreeNode(lexems[pos], null));
-            if (String.Equals(check, successMessage))
             {
                 pos++;
                 check = EndPoints.IdentificatorCheck(lexems);
                 if (String.Equals(check, successMessage))
+                {
+                    treeNodes.Add(new TreeNode(lexems[pos - 1], null));
                     treeNodes.Add(new TreeNode(lexems[pos], null));
-                if (String.Equals(check, successMessage))
                     return successMessage;
+                }
 
                 check = EndPoints.NumberValueCheck(lexems);
                 if (String.Equals(check, successMessage))
+                {
+                    treeNodes.Add(new TreeNode(lexems[pos - 1], null));
                     treeNodes.Add(new TreeNode(lexems[pos], null));
-                if (String.Equals(check, successMessage))
                     return successMessage;
+                }
                 pos--;
             }
 
@@ -197,12 +199,11 @@ namespace JavaInPythonTranslator
 
             check = EndPoints.IdentificatorCheck(lexems);
             if (String.Equals(check, successMessage))
-                treeNodes.Add(new TreeNode(lexems[pos], null));
-            if (String.Equals(check, successMessage))
             {
                 check = callFunctionCheck(lexems, treeNodes);
                 if (String.Equals(check, successMessage))
                     return successMessage;
+                treeNodes.RemoveAt(treeNodes.Count - 1);
                 pos--;
             }
 

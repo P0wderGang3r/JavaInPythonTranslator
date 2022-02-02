@@ -28,7 +28,7 @@ namespace JavaInPythonTranslator
 
             //Переход к анализу следующего блока кода
             List<TreeNode> treeNode1 = new();
-            treeNodes.Add(new TreeNode(new LexList("", ""), treeNode1));
+            treeNodes.Add(new TreeNode(new LexList(NewTree, NewTree), treeNode1));
             return blockOfCodeCheck(lexems, treeNode1);
         }
         #endregion
