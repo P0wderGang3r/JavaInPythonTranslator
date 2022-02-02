@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace JavaInPythonTranslator
+﻿namespace JavaInPythonTranslator
 {
     /// <summary>
     /// <br>lexClass - класс лексемы</br>
@@ -50,8 +44,8 @@ namespace JavaInPythonTranslator
 
     struct TreeNode
     {
-        LexList lexem;
-        List<TreeNode> nextLevelNodes;
+        public LexList lexem;
+        public List<TreeNode> nextLevelNodes;
 
         public TreeNode(string type, string value, List<TreeNode>? nextLevelNodes) : this()
         {
@@ -88,6 +82,17 @@ namespace JavaInPythonTranslator
         public static string fractionaNumber = "NP";
         public static string identificator = "ID";
 
-        public static List<TreeNode> treeNodes = new();
+        public static void treeRun(List<TreeNode> treeNodes)
+        {
+            foreach (TreeNode treeNode in treeNodes)
+            {
+                if (treeNode.nextLevelNodes != null)
+                {
+                    Console.WriteLine();
+                    treeRun(treeNode.nextLevelNodes);
+                }
+                Console.Write(treeNode.lexem.value + " ");
+            }
+        }
     }
 }

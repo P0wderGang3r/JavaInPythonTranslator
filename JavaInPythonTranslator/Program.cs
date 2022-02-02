@@ -24,7 +24,7 @@ namespace JavaInPythonTranslator
 
             //---------------------------Лексический анализ------------------------------
 
-            
+
             List<LexList> lexList = new();
 
             if (!LexicalAnalyzer.initLexAnalyzer())
@@ -47,9 +47,12 @@ namespace JavaInPythonTranslator
 
             //--------------------------Синтаксический анализ----------------------------
 
-            //Так, для теста
-            Console.WriteLine(SyntaxAnalyzer.startRule(lexList));
 
+            List<TreeNode> treeNodes = new();
+
+            Console.WriteLine(SyntaxAnalyzer.startRule(lexList, treeNodes));
+
+            Globals.treeRun(treeNodes);
 
             //--------------------------Семантический анализ-----------------------------
 
