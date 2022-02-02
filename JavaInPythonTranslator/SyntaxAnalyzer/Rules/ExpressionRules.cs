@@ -10,6 +10,7 @@ namespace JavaInPythonTranslator
 {
     internal class ExpressionRules
     {
+        #region <выражение> → <арифметическое выражение> | <логическое выражение> | <значение> | <идентификатор>
         public static string expressionCheck(List<LexList> lexems)
         {
             string check;
@@ -33,12 +34,14 @@ namespace JavaInPythonTranslator
 
             return "Ошибка";
         }
+        #endregion
 
+        #region <арифметическое выражение> → <операнд> <арифметический оператор> <арифметическое выражение> | <операнд> 
         static string arithmeticalCheck(List<LexList> lexems)
         {
             string check;
             
-            check = arithmeticalOperandCheck(lexems);
+            check = operandCheck(lexems);
             if (!String.Equals(check, successMessage))
                 return check;
             pos++;
@@ -46,41 +49,15 @@ namespace JavaInPythonTranslator
             check = EndPoints.ArithmeticalOperatorCheck(lexems);
             if (!String.Equals(check, successMessage))
             {
-                return successMessage;
+                return check;
             }
             pos++;
 
             return arithmeticalCheck(lexems);
         }
+        #endregion
 
-        static string arithmeticalOperandCheck(List<LexList> lexems)
-        {
-            string check;
-
-            check = EndPoints.NumberValueCheck(lexems);
-            if (String.Equals(check, successMessage))
-                return successMessage;
-
-            check = EndPoints.IdentificatorCheck(lexems);
-            if (String.Equals(check, successMessage))
-            {
-                check = callFunctionCheck(lexems);
-                if (String.Equals(check, successMessage))
-                    return successMessage;
-                pos--;
-            }
-
-            check = unaryCheck(lexems);
-            if (String.Equals(check, successMessage))
-                return successMessage;
-
-            check = EndPoints.IdentificatorCheck(lexems);
-            if (String.Equals(check, successMessage))
-                return successMessage;
-
-            return "Ошибка: ожидался операнд";
-        }
-
+        #region <унарная арифметическая операция> → <идентификатор> <унарный арифметический оператор> | <унарный арифметический оператор> <идентификатор> | <знак числа> <идентификатор> | <знак числа> <число>
         static string unaryCheck(List<LexList> lexems)
         {
             string check;
@@ -121,23 +98,108 @@ namespace JavaInPythonTranslator
 
             return "Ошибка: ожидался унарный операнд";
         }
+        #endregion
 
+        #region <логическое выражение> → <логический операнд> | <логический операнд> <логический бинарный оператор> <логическое выражение> | !<логическое выражение>
         static string logicalCheck(List<LexList> lexems)
         {
+            string check;
 
-            return successMessage;
+            if (String.Equals(lexems[pos].value, "!"))
+            {
+                pos++;
+                logicalCheck(lexems);
+            }
+
+            check = logicalOperandCheck(lexems);
+            if (!String.Equals(check, successMessage))
+                return check;
+            pos++;
+
+            check = EndPoints.LogicalBinaryOperatorCheck(lexems);
+            if (String.Equals(check, successMessage))
+            {
+                return check;
+            }
+            pos++;
+
+            return logicalCheck(lexems);
         }
+        #endregion
 
+        #region <логический операнд> → <операнд> | <выражение сравнения>
         static string logicalOperandCheck(List<LexList> lexems)
         {
+            string check;
+            int startPos = pos;
 
-            return successMessage;
+            check = comparisonCheck(lexems);
+            if (String.Equals(check, successMessage))
+            {
+                return successMessage;
+            }
+
+            pos = startPos;
+            check = operandCheck(lexems);
+            if (String.Equals(check, successMessage))
+                return successMessage;
+
+            return "Ошибка: ожидался логический операнд";
         }
+        #endregion
 
-        static string comparisonOperandCheck(List<LexList> lexems)
+        #region <выражение сравнения> → <операнд> <оператор сравнения> <операнд> 
+        static string comparisonCheck(List<LexList> lexems)
         {
+            string check;
+
+            check = operandCheck(lexems);
+            if (!String.Equals(check, successMessage))
+                return check;
+            pos++;
+
+            check = EndPoints.ComparisonOperatorCheck(lexems);
+            if (!String.Equals(check, successMessage))
+                return check;
+            pos++;
+
+            check = operandCheck(lexems);
+            if (!String.Equals(check, successMessage))
+                return check;
+            pos++;
 
             return successMessage;
         }
+        #endregion
+
+        #region <операнд> → <число> | <идентификатор> | <вызов функции> | <унарная арифметическая операция> | <символьное значение>
+        static string operandCheck(List<LexList> lexems)
+        {
+            string check;
+
+            check = EndPoints.NumberValueCheck(lexems);
+            if (String.Equals(check, successMessage))
+                return successMessage;
+
+            check = EndPoints.IdentificatorCheck(lexems);
+            if (String.Equals(check, successMessage))
+            {
+                check = callFunctionCheck(lexems);
+                if (String.Equals(check, successMessage))
+                    return successMessage;
+                pos--;
+            }
+
+            check = unaryCheck(lexems);
+            if (String.Equals(check, successMessage))
+                return successMessage;
+
+            check = EndPoints.IdentificatorCheck(lexems);
+            if (String.Equals(check, successMessage))
+                return successMessage;
+
+            return "Ошибка: ожидался операнд";
+        }
+        #endregion
     }
 }

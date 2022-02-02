@@ -61,6 +61,7 @@ namespace JavaInPythonTranslator
         static int row = 0;
         static int column = 0;
 
+        //Нет поддержки восклицательных знаков
         ///<summary>Функция - точка входа в лексический анализ входного текста</summary>
         public static bool runLexScan(List<LexList> lexList, List<String> inputFile)
         {
