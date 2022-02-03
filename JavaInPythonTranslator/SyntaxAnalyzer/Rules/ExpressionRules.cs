@@ -29,7 +29,7 @@ namespace JavaInPythonTranslator
         #endregion
 
         #region <арифметическое выражение> → <операнд> <арифметический оператор> <арифметическое выражение> | <операнд> 
-        static string arithmeticalCheck(List<LexList> lexems, List<TreeNode> treeNodes)
+        public static string arithmeticalCheck(List<LexList> lexems, List<TreeNode> treeNodes)
         {
             string check;
 

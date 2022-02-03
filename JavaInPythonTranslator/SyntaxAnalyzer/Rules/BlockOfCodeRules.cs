@@ -62,7 +62,10 @@ namespace JavaInPythonTranslator
             check = callFunctionCheck(lexems, treeNodes);
             if (String.Equals(check, successMessage))
             {
+                //Проверяем на наличие ;
                 check = compare(lexems[pos].type, D3);
+                if (String.Equals(check, successMessage))
+                    treeNodes.Add(new TreeNode(lexems[pos - 1], null));
                 if (!String.Equals(check, successMessage))
                     return check;
 
@@ -76,6 +79,13 @@ namespace JavaInPythonTranslator
             check = assignmentCheck(lexems, treeNodes);
             if (String.Equals(check, successMessage))
             {
+                //Проверяем, что следует точка с запятой
+                check = compare(lexems[pos].type, D3);
+                if (String.Equals(check, successMessage))
+                    treeNodes.Add(new TreeNode(lexems[pos - 1], null));
+                if (!String.Equals(check, successMessage))
+                    return check;
+
                 return successMessage;
             }
 
@@ -88,9 +98,6 @@ namespace JavaInPythonTranslator
                 return successMessage;
             }
 
-            //Костыль
-            return "Ошибка";
-
             treeNodes.Clear();
             pos = startPos;
             //Проверка на вход в цикл
@@ -100,7 +107,7 @@ namespace JavaInPythonTranslator
                 return successMessage;
             }
 
-            return "Ошибка";
+            return "Ошибка: ожидался идентификатор";
         }
         #endregion
 

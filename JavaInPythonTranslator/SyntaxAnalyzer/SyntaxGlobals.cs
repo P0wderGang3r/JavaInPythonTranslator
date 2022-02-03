@@ -54,6 +54,6 @@
         public static string stringClass = "T8";
         public static string P1 = "P1"; //=
 
-        public static string NewTree = "NewTree"; //=
+        public static string NewTree = "NewTree"; //Для визуального удобства
     }
 }
