@@ -61,12 +61,15 @@ namespace JavaInPythonTranslator
 
 
             //-----------------------------Генератор кода--------------------------------
+
+
             string outputPath = "../../../../Output";
             System.IO.Directory.CreateDirectory(outputPath);
             using (StreamWriter file = new StreamWriter( outputPath + System.IO.Path.ChangeExtension(inputFile, ".py")))
             {
                 CodeGenerator.Generate1(file, treeNodes);
             }
+
 
             return 0;
         }
