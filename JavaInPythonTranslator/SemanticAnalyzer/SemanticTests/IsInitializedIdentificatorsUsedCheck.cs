@@ -13,50 +13,72 @@ namespace JavaInPythonTranslator
         {
             public string type;
             public string value;
-            public List<TreeNode> node;
 
-            public RInits(string type, string value, List<TreeNode> node)
+            public RInits(string type, string value)
             {
                 this.type = type;
                 this.value = value;
-                this.node = node;
             }
         }
 
-        static List<RInits> repeatedInits = new();
-
-        public static bool makeBibliary(List<TreeNode> treeNodes)
+        struct IDChecked
         {
+            public string value;
+            public List<TreeNode> whereIsChecked;
+
+            public IDChecked(string value, List<TreeNode> whereIsChecked)
+            {
+                this.value=value;
+                this.whereIsChecked=whereIsChecked;
+            }
+        }
+
+        static List<IDChecked> idc = new();
+
+        static void interCheck(List<TreeNode> treeNodes, RInits checkedElement)
+        {
+
+            for (int i = 0; i < treeNodes.Count; i++)
+            {
+
+                if (String.Equals(treeNodes[i].lexem.value, checkedElement.value))
+                    idc.Add(new IDChecked(checkedElement.value, treeNodes));
+            }
+
+            foreach (TreeNode treeNode in treeNodes)
+            {
+                if (treeNode.nextLevelNodes != null)
+                {
+                    interCheck(treeNode.nextLevelNodes, checkedElement);
+                }
+            }
+        }
+
+
+        public static void repeatedInitializations(List<TreeNode> treeNodes)
+        {
+            bool trigger = false;
+
             //Проход по строке
             for (int pos = 0; pos < treeNodes.Count; pos++)
             {
-                //Если находим лексему-import, то смотрим дальше
-                if (treeNodes[pos].lexem.type == "K1")
-                {
-                    RInits newElem = new RInits(treeNodes[pos].lexem.value, treeNodes[pos + 1].lexem.value, treeNodes);
-                    repeatedInits.Add(newElem);
-                }
-
-                    //Если находим лексему-тип, то смотрим дальше
+                //Если находим лексему-тип, то смотрим дальше
                 if (treeNodes[pos].lexem.type[0] == 'T')
                 {
                     //Проходимся по типам переменных в надежде найти существующий
-                    foreach (LexicalClasses lexClass in dividerClasses)
+                    foreach (LexicalClasses lexClass in letterClasses)
                     {
-                        //Если находим такой тип, то смотрим дальше
-                        if (treeNodes[pos].lexem.type == lexClass.getLexClass())
+                        if (String.Equals(treeNodes[pos].lexem.type, lexClass.getLexClass()) && (String.Equals(treeNodes[pos + 1].lexem.type, identificator)))
                         {
-                            RInits newElem = new RInits(treeNodes[pos].lexem.value, treeNodes[pos + 1].lexem.value, treeNodes);
+                            RInits newElem = new RInits(treeNodes[pos].lexem.value, treeNodes[pos + 1].lexem.value);
 
-                            //Создаём глоссарий переменных
-                            foreach (RInits repeatedInit in repeatedInits)
+                            foreach (TreeNode node in treeNodes)
                             {
-                                if (!(repeatedInit.value == newElem.value))
+                                if (node.nextLevelNodes != null)
                                 {
-                                    repeatedInits.Add(newElem);
+                                    interCheck(node.nextLevelNodes, newElem);
                                 }
                             }
-
                         }
                     }
                 }
@@ -66,15 +88,47 @@ namespace JavaInPythonTranslator
             {
                 if (treeNode.nextLevelNodes != null)
                 {
-                    makeBibliary(treeNode.nextLevelNodes);
+                    repeatedInitializations(treeNode.nextLevelNodes);
                 }
             }
-            return false;
         }
 
-        public static bool isInitializedUsedMain(List<TreeNode> treeNodes)
+        static bool check(List<TreeNode> treeNodes)
         {
-            makeBibliary(treeNodes);
+            bool trigger = false;
+
+            foreach (TreeNode treeNode in treeNodes)
+            {
+                foreach (IDChecked id in idc)
+                {
+                    if (treeNode.lexem.value == id.value)
+                    {
+                        trigger = true;
+                        if (treeNodes == id.whereIsChecked)
+                            trigger = false;
+                    }
+                    if (trigger == true)
+                        return true;
+                }
+            }
+
+            foreach (TreeNode treeNode in treeNodes)
+            {
+                if (treeNode.nextLevelNodes != null)
+                {
+                    trigger = check(treeNode.nextLevelNodes);
+                    if (trigger == true)
+                        break;
+                }
+            }
+            return trigger;
+        }
+
+        public static bool checkMain(List<TreeNode> treeNodes)
+        {
+            repeatedInitializations(treeNodes);
+
+            check(treeNodes);
 
             return false;
         }
