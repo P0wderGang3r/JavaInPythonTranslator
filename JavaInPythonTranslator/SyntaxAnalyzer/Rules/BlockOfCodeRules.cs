@@ -79,22 +79,22 @@ namespace JavaInPythonTranslator
                 return successMessage;
             }
 
+            treeNodes.Clear();
+            pos = startPos;
+            //Проверка на вход в ветвление
+            check = ifCheck(lexems, treeNodes);
+            if (String.Equals(check, successMessage))
+            {
+                return successMessage;
+            }
+
             //Костыль
             return "Ошибка";
 
             treeNodes.Clear();
             pos = startPos;
             //Проверка на вход в цикл
-            check = loopCheck(lexems);
-            if (String.Equals(check, successMessage))
-            {
-                return successMessage;
-            }
-
-            treeNodes.Clear();
-            pos = startPos;
-            //Проверка на вход в ветвление
-            check = ifElseCheck(lexems);
+            check = loopCheck(lexems, treeNodes);
             if (String.Equals(check, successMessage))
             {
                 return successMessage;

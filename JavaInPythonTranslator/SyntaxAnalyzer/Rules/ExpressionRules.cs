@@ -111,7 +111,7 @@ namespace JavaInPythonTranslator
         #endregion
 
         #region <логическое выражение> → <логический операнд> | <логический операнд> <логический бинарный оператор> <логическое выражение> | !<логическое выражение>
-        static string logicalCheck(List<LexList> lexems, List<TreeNode> treeNodes)
+        public static string logicalCheck(List<LexList> lexems, List<TreeNode> treeNodes)
         {
             string check;
 
@@ -124,12 +124,11 @@ namespace JavaInPythonTranslator
             check = logicalOperandCheck(lexems, treeNodes);
             if (!String.Equals(check, successMessage))
                 return check;
-            pos++;
 
             check = EndPoints.LogicalBinaryOperatorCheck(lexems);
             if (String.Equals(check, successMessage))
                 treeNodes.Add(new TreeNode(lexems[pos], null));
-            if (String.Equals(check, successMessage))
+            if (!String.Equals(check, successMessage))
             {
                 return successMessage;
             }
@@ -153,8 +152,14 @@ namespace JavaInPythonTranslator
 
             pos = startPos;
             check = operandCheck(lexems, treeNodes);
-            if (String.Equals(check, successMessage))
-                return successMessage;
+            if (!String.Equals(check, successMessage))
+            {
+                check = EndPoints.LogicalValueCheck(lexems);
+                if (String.Equals(check, successMessage))
+                    treeNodes.Add(new TreeNode(lexems[pos], null));
+                if (!String.Equals(check, successMessage))
+                    return check;
+            }
 
             return "Ошибка: ожидался логический операнд";
         }
@@ -167,7 +172,13 @@ namespace JavaInPythonTranslator
 
             check = operandCheck(lexems, treeNodes);
             if (!String.Equals(check, successMessage))
-                return check;
+            {
+                check = EndPoints.LogicalValueCheck(lexems);
+                if (String.Equals(check, successMessage))
+                    treeNodes.Add(new TreeNode(lexems[pos], null));
+                if (!String.Equals(check, successMessage))
+                    return check;
+            }
             pos++;
 
             check = EndPoints.ComparisonOperatorCheck(lexems);
@@ -179,14 +190,20 @@ namespace JavaInPythonTranslator
 
             check = operandCheck(lexems, treeNodes);
             if (!String.Equals(check, successMessage))
-                return check;
+            {
+                check = EndPoints.LogicalValueCheck(lexems);
+                if (String.Equals(check, successMessage))
+                    treeNodes.Add(new TreeNode(lexems[pos], null));
+                if (!String.Equals(check, successMessage))
+                    return check;
+            }
             pos++;
 
             return successMessage;
         }
         #endregion
 
-        #region <операнд> → <число> | <идентификатор> | <вызов функции> | <унарная арифметическая операция> | <символьное значение>
+        #region <операнд> → <число> | <идентификатор> | <вызов функции> | <унарная арифметическая операция> | <символьное значение> | <логическое значение>
         static string operandCheck(List<LexList> lexems, List<TreeNode> treeNodes)
         {
             string check;
