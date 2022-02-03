@@ -17,7 +17,7 @@ namespace JavaInPythonTranslator
                 return check;
             pos++;
 
-            //Проверка на наличие опаратора присваивания
+            //Проверка на наличие оператора присваивания
             check = EndPoints.AssignmentOperatorCheck(lexems);
             if (String.Equals(check, successMessage))
                 treeNodes.Add(new TreeNode(lexems[pos], null));

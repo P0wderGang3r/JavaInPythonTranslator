@@ -37,6 +37,7 @@
         public static string voidClass = "K15";
         public static string returnClass = "K16";
 
+        public static string U3 = "U3"; //!
 
         public static string D1 = "D1"; //.
         public static string D2 = "D2"; //,

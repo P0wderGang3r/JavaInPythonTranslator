@@ -20,8 +20,7 @@ namespace JavaInPythonTranslator
             }
 
             if (Globals.logVerboseLevel >= 1)
-                for (int i = 0; i < inputText.Count; i++)
-                    Console.WriteLine(inputText[i]);
+                Miscelaneous.inpRun(inputText);
 
 
             //---------------------------Лексический анализ------------------------------
@@ -43,8 +42,7 @@ namespace JavaInPythonTranslator
 
 
             if (Globals.logVerboseLevel >= 1)
-                for (int i = 0; i < lexList.Count; i++)
-                    Console.WriteLine(lexList[i].type + " " + lexList[i].value);
+                Miscelaneous.lexRun(lexList);
 
 
             //--------------------------Синтаксический анализ----------------------------
@@ -52,11 +50,21 @@ namespace JavaInPythonTranslator
 
             List<TreeNode> treeNodes = new();
 
-            Console.WriteLine(SyntaxAnalyzer.startRule(lexList, treeNodes));
+            string syntaxResult = SyntaxAnalyzer.startRule(lexList, treeNodes);
+            if (syntaxResult != SyntaxGlobals.successMessage)
+            {
+                if (Globals.logVerboseLevel >= 1)
+                    Console.WriteLine(syntaxResult);
+                    return 4;
+            }
 
-            Globals.treeRun(treeNodes);
+            if (Globals.logVerboseLevel >= 1)
+                Miscelaneous.treeRun(treeNodes);
+
 
             //--------------------------Семантический анализ-----------------------------
+
+
 
 
 

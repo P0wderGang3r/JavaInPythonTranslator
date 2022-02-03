@@ -1,5 +1,5 @@
 import java.lang.Math; 
-class Main{ 
+class Main{
  public static void main (String[] args) {
  int a = 25;
   System.out.println(a + a * ++a, a);
@@ -18,5 +18,5 @@ class Main{
  do {
   System.out.println(a * a);
  } while (a > 0);
- } 
+ }
 }

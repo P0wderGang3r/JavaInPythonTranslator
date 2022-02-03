@@ -5,7 +5,7 @@ namespace JavaInPythonTranslator
 {
     internal class ExpressionRules
     {
-        #region <выражение> → <арифметическое выражение> | <логическое выражение> | <значение> | <идентификатор>
+        #region <выражение> → <арифметическое выражение> | <логическое выражение>
         public static string expressionCheck(List<LexList> lexems, List<TreeNode> treeNodes)
         {
             string check;
@@ -115,12 +115,6 @@ namespace JavaInPythonTranslator
         {
             string check;
 
-            if (String.Equals(lexems[pos].value, "!"))
-            {
-                pos++;
-                logicalCheck(lexems, treeNodes);
-            }
-
             check = logicalOperandCheck(lexems, treeNodes);
             if (!String.Equals(check, successMessage))
                 return check;
@@ -138,7 +132,7 @@ namespace JavaInPythonTranslator
         }
         #endregion
 
-        #region <логический операнд> → <операнд> | <выражение сравнения>
+        #region <логический операнд> → <выражение сравнения> | <операнд>
         static string logicalOperandCheck(List<LexList> lexems, List<TreeNode> treeNodes)
         {
             string check;
@@ -149,16 +143,33 @@ namespace JavaInPythonTranslator
             {
                 return successMessage;
             }
+            int delta = pos - startPos;
+
+            for (int i = 0; i < delta; i++)
+                treeNodes.RemoveAt(treeNodes.Count - 1);
 
             pos = startPos;
             check = operandCheck(lexems, treeNodes);
             if (!String.Equals(check, successMessage))
             {
+                //Отсечение всех !
+                while (String.Equals(lexems[pos].type, U3))
+                {
+                    treeNodes.Add(new TreeNode(lexems[pos], null));
+                    pos++;
+                }
+                //Проверка на то, что это логическое значение
                 check = EndPoints.LogicalValueCheck(lexems);
                 if (String.Equals(check, successMessage))
+                {
                     treeNodes.Add(new TreeNode(lexems[pos], null));
-                if (!String.Equals(check, successMessage))
-                    return check;
+                    return successMessage;
+                }
+            }
+            else if(String.Equals(check, successMessage))
+            {
+                treeNodes.Add(new TreeNode(lexems[pos], null));
+                return successMessage;
             }
 
             return "Ошибка: ожидался логический операнд";
@@ -173,6 +184,13 @@ namespace JavaInPythonTranslator
             check = operandCheck(lexems, treeNodes);
             if (!String.Equals(check, successMessage))
             {
+                //Отсечение всех !
+                while (String.Equals(lexems[pos].type, U3))
+                {
+                    treeNodes.Add(new TreeNode(lexems[pos], null));
+                    pos++;
+                }
+                //Проверка на то, что это логическое значение
                 check = EndPoints.LogicalValueCheck(lexems);
                 if (String.Equals(check, successMessage))
                     treeNodes.Add(new TreeNode(lexems[pos], null));
@@ -191,6 +209,13 @@ namespace JavaInPythonTranslator
             check = operandCheck(lexems, treeNodes);
             if (!String.Equals(check, successMessage))
             {
+                //Отсечение всех !
+                while (String.Equals(lexems[pos].type, U3))
+                {
+                    treeNodes.Add(new TreeNode(lexems[pos], null));
+                    pos++;
+                }
+                //Проверка на то, что это логическое значение
                 check = EndPoints.LogicalValueCheck(lexems);
                 if (String.Equals(check, successMessage))
                     treeNodes.Add(new TreeNode(lexems[pos], null));

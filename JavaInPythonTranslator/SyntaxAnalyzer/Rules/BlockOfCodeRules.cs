@@ -65,11 +65,10 @@ namespace JavaInPythonTranslator
                 //Проверяем на наличие ;
                 check = compare(lexems[pos].type, D3);
                 if (String.Equals(check, successMessage))
+                {
                     treeNodes.Add(new TreeNode(lexems[pos - 1], null));
-                if (!String.Equals(check, successMessage))
-                    return check;
-
-                return successMessage;
+                    return successMessage;
+                }
             }
 
 
@@ -79,14 +78,13 @@ namespace JavaInPythonTranslator
             check = assignmentCheck(lexems, treeNodes);
             if (String.Equals(check, successMessage))
             {
-                //Проверяем, что следует точка с запятой
+                //Проверяем на наличие ;
                 check = compare(lexems[pos].type, D3);
                 if (String.Equals(check, successMessage))
+                {
                     treeNodes.Add(new TreeNode(lexems[pos - 1], null));
-                if (!String.Equals(check, successMessage))
-                    return check;
-
-                return successMessage;
+                    return successMessage;
+                }
             }
 
             treeNodes.Clear();
@@ -105,6 +103,20 @@ namespace JavaInPythonTranslator
             if (String.Equals(check, successMessage))
             {
                 return successMessage;
+            }
+
+            //Проверяем, что встретили ключевое слово break
+            check = compare(lexems[pos].type, breakClass);
+            if (String.Equals(check, successMessage))
+            {
+                treeNodes.Add(new TreeNode(lexems[pos - 1], null));
+                //Проверяем на наличие ;
+                check = compare(lexems[pos].type, D3);
+                if (String.Equals(check, successMessage))
+                {
+                    treeNodes.Add(new TreeNode(lexems[pos - 1], null));
+                    return successMessage;
+                }
             }
 
             return "Ошибка: ожидался идентификатор";
