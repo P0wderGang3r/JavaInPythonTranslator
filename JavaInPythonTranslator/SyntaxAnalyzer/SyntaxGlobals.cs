@@ -52,7 +52,7 @@
         public static string Q1 = "Q1"; //'
         public static string Q2 = "Q2"; //"
 
-        public static string stringClass = "T8";
+        public static string stringClass = "T8"; //Строковый тип, используемый в объявлении главной функции
         public static string P1 = "P1"; //=
 
         public static string NewTree = "NewTree"; //Для визуального удобства

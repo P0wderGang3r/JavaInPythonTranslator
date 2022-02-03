@@ -65,7 +65,8 @@ namespace JavaInPythonTranslator
             //--------------------------Семантический анализ-----------------------------
 
 
-
+            if (SemanticAnalyzer.runSemanticScan(treeNodes))
+                return 5;
 
 
             //-----------------------------Генератор кода--------------------------------
