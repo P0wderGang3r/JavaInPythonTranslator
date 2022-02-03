@@ -67,7 +67,8 @@ namespace JavaInPythonTranslator
             System.IO.Directory.CreateDirectory(outputPath);
             using (StreamWriter file = new StreamWriter( outputPath + System.IO.Path.ChangeExtension(inputFile, ".py")))
             {
-                CodeGenerator.Generate1(file, treeNodes);
+                CodeGenerator.Generate(file, treeNodes);
+                CodeGenerator.addMainFunctionCall(file);
             }
 
 

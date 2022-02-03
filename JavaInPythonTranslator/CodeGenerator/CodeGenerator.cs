@@ -74,7 +74,7 @@
         }
 
         // Главная функция генератора кода
-        public static void Generate1(StreamWriter file, List<TreeNode> treeNodes) {
+        public static void Generate(StreamWriter file, List<TreeNode> treeNodes) {
             
             for (int i = 0; i < treeNodes.Count; i++)
             {
@@ -89,16 +89,23 @@
                         file.Write(stringOffset());
                     }
 
-                    Generate1(file, treeNodes[i].nextLevelNodes);
+                    Generate(file, treeNodes[i].nextLevelNodes);
                 }
                 file.Write(String.Equals(treeNodes[i].lexem.value, "NewTree") ? "" : Translate(treeNodes, ref i, treeNodes.Count));
             }
         }
 
+        // добавление в файл 'if __name__=="__main__": main()'
+        public static void addMainFunctionCall(StreamWriter file) {
+            file.WriteLine();
+            file.WriteLine("if __name__=='__main__':");
+            file.WriteLine("\tmain()");
+        }
+
         // Трансляция Java в Python
         // В параметрах - список нод и индекс обрабатываемой ноды, т.к. возможно потребуется доступ к содержимому других нод
         // Поэтому работать с объектом treeNode не вариант
-        public static string Translate(List<TreeNode> treeNodes, ref int i, int size) {
+        static string Translate(List<TreeNode> treeNodes, ref int i, int size) {
            
             switch (treeNodes[i].lexem.type)
             {
@@ -111,6 +118,19 @@
                         return "";
                     }
                     return treeNodes[i].lexem.value + " ";
+
+                // public
+                case "K2":
+                    // проверка на главную функцию public static void main(String [] args)
+                    if ((i + 3 < size) && (treeNodes[i + 3].lexem.type == "K7"))
+                    {
+                        intOffset++;
+                        inBodyStack.Push("{");
+                        i += 9;
+                        return "def main()";
+                    }
+                    return "";
+
 
                 // class
                 case "K14":
@@ -150,8 +170,8 @@
                     intOffset--;
                     inBodyStack.Pop();
                     return "";
-                
 
+                
                 default:
                     return treeNodes[i].lexem.value + " ";
             }
