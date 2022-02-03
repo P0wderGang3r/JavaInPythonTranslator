@@ -17,7 +17,7 @@ namespace JavaInPythonTranslator
                 return check;
             pos++;
 
-            //Проверка на наличие идентификатора
+            //Проверка на наличие опаратора присваивания
             check = EndPoints.AssignmentOperatorCheck(lexems);
             if (String.Equals(check, successMessage))
                 treeNodes.Add(new TreeNode(lexems[pos], null));
@@ -35,14 +35,6 @@ namespace JavaInPythonTranslator
             {
                 return check;
             }
-
-            //Проверяем, что следует точка с запятой
-            check = compare(lexems[pos].type, D3);
-            if (String.Equals(check, successMessage))
-                treeNodes.Add(new TreeNode(lexems[pos - 1], null));
-            if (!String.Equals(check, successMessage))
-                return check;
-
             return successMessage;
         }
         #endregion
