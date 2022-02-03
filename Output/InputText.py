@@ -1,9 +1,9 @@
 
 
 def main():
-	a = 25 
 	print(a + a * (a + 1), a )
 	if(a >= ! True&& True):
+		a = 25 
 		a += 25 
 		
 	else:

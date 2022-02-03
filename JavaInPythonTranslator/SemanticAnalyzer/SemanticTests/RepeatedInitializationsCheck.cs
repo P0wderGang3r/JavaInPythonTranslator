@@ -20,10 +20,34 @@ namespace JavaInPythonTranslator
             }
         }
 
-        static List<RInits> repeatedInits = new();
+        static bool interCheck(List<TreeNode> treeNodes, RInits checkedElement)
+        {
+            bool trigger = false;
+
+            for (int i = 0; i < treeNodes.Count; i++) {
+
+                if (String.Equals(treeNodes[i].lexem.value, checkedElement.type) && String.Equals(treeNodes[i + 1].lexem.value, checkedElement.value))
+                    return true;
+            }
+
+            foreach (TreeNode treeNode in treeNodes)
+            {
+                if (treeNode.nextLevelNodes != null)
+                {
+                    trigger = interCheck(treeNode.nextLevelNodes, checkedElement);
+                    if (trigger == true)
+                        break;
+                }
+            }
+
+            return trigger;
+        }
+
 
         public static bool repeatedInitializations(List<TreeNode> treeNodes)
         {
+            bool trigger = false;
+
             //Проход по строке
             for (int pos = 0; pos < treeNodes.Count; pos++)
             {
@@ -31,34 +55,19 @@ namespace JavaInPythonTranslator
                 if (treeNodes[pos].lexem.type[0] == 'T')
                 {
                     //Проходимся по типам переменных в надежде найти существующий
-                    foreach (LexicalClasses lexClass in dividerClasses)
+                    foreach (LexicalClasses lexClass in letterClasses)
                     {
-                        //Если находим такой тип, то смотрим дальше
-                        if (treeNodes[pos].lexem.type == lexClass.getLexClass())
+                        if (String.Equals(treeNodes[pos].lexem.type, lexClass.getLexClass()) && (String.Equals(treeNodes[pos + 1].lexem.type, identificator)))
                         {
                             RInits newElem = new RInits(treeNodes[pos].lexem.value, treeNodes[pos + 1].lexem.value);
 
-                            //Проверяем переменную на предмет её наличия в списке переменных
-                            foreach (RInits repeatedInit in repeatedInits)
+                            foreach (TreeNode node in treeNodes)
                             {
-                                if (repeatedInit.value == newElem.value)
+                                if (node.nextLevelNodes != null)
                                 {
-                                    return true;
+                                    return interCheck(node.nextLevelNodes, newElem);
                                 }
                             }
-                            //Добавляем элемент в рамках данного "Скоупа"
-                            repeatedInits.Add(newElem);
-
-                            foreach (TreeNode treeNode in treeNodes)
-                            {
-                                if (treeNode.nextLevelNodes != null)
-                                {
-                                    repeatedInitializations(treeNode.nextLevelNodes);
-                                }
-                            }
-                            //Удаляем элемент, чтобы не проверять его наличие за пределами данного "Скоупа"
-                            repeatedInits.Remove(newElem);
-
                         }
                     }
                 }
@@ -68,10 +77,11 @@ namespace JavaInPythonTranslator
             {
                 if (treeNode.nextLevelNodes != null)
                 {
-                    repeatedInitializations(treeNode.nextLevelNodes);
+                    return repeatedInitializations(treeNode.nextLevelNodes);
                 }
             }
-            return false;
+
+            return trigger;
         }
 
     }
