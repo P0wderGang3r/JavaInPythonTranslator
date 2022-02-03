@@ -44,9 +44,9 @@ namespace JavaInPythonTranslator
                 //<---
 
                 if (Globals.logVerboseLevel == 404)
-                    for (int i = 0; i < operatorClasses.Count; i += 2)
+                    for (int i = 0; i < operatorClasses.Count; i += 1)
                     {
-                        Console.WriteLine(operatorClasses[i].GetType() + " " + operatorClasses[i].getRegEx());
+                        Console.WriteLine(operatorClasses[i].getLexClass() + " " + operatorClasses[i].getRegEx());
                     }
 
                 return true;
@@ -145,25 +145,25 @@ namespace JavaInPythonTranslator
         {
             String word = "" + inputFile[row][column];
 
+            column++;
+            //Ищем унарные операторы типа ++, +=
+            if (column < inputFile[row].Length)
+                for (int j = 0; j < operatorClasses.Count; j++)
+                {
+                    if (String.Equals(word + inputFile[row][column], operatorClasses[j].getRegEx()))
+                    {
+                        word += inputFile[row][column];
+                        lexList.Add(new LexList(operatorClasses[j].getLexClass(), word));
+                        return true;
+                    }
+                }
+            column--;
+
             //Ищем совпадения с операторами типа +
             for (int i = 0; i < operatorClasses.Count; i++)
             {
                 if (String.Equals(word, operatorClasses[i].getRegEx()))
                 {
-                    column++;
-
-                    //Ищем унарные операторы типа ++, +=
-                    if (column < inputFile[row].Length)
-                        for (int j = 0; j < operatorClasses.Count; j++)
-                        {
-                            if (String.Equals(word + inputFile[row][column], operatorClasses[j].getRegEx()))
-                            {
-                                word += inputFile[row][column];
-                                lexList.Add(new LexList(operatorClasses[j].getLexClass(), word));
-                                return true;
-                            }
-                        }
-
                     lexList.Add(new LexList(operatorClasses[i].getLexClass(), word));
                     return true;
                 }

@@ -69,7 +69,7 @@
         /// <br>Если >= 2, то может выводиться любая информация, которая нужна для отладки</br>
         /// <br>Блок if должен выглядеть так: if (Globals.logVerboseLevel {== или >=} ?) ...</br>
         /// </summary>
-        public static int logVerboseLevel = 1;
+        public static int logVerboseLevel = 404;
 
         ///<summary>Переменная, отвечающая за добавление в список токенов пробелов из входного текста.</summary>
         public static bool lexSpaces = false;
@@ -80,23 +80,9 @@
 
         public static string wholeNumber = "NN";
         public static string fractionaNumber = "NP";
+        public static string charNumber = "NC";
+        public static string stringNumber = "NS";
+
         public static string identificator = "ID";
-
-        public static void treeRun(List<TreeNode> treeNodes)
-        {
-            foreach (TreeNode treeNode in treeNodes)
-            {
-                Console.Write(treeNode.lexem.value + " ");
-            }
-
-            foreach (TreeNode treeNode in treeNodes)
-            {
-                if (treeNode.nextLevelNodes != null)
-                {
-                    Console.WriteLine();
-                    treeRun(treeNode.nextLevelNodes);
-                }
-            }
-        }
     }
 }

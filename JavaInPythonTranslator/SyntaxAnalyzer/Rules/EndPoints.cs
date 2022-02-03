@@ -191,15 +191,61 @@ namespace JavaInPythonTranslator
         }
         #endregion
 
+        #region <символьное значение> → NC
+        public static string CharValueCheck(List<LexList> lexems)
+        {
+            bool trigger = false;
+
+            if (String.Equals(lexems[pos].type, charNumber))
+            {
+                trigger = true;
+            }
+
+            if (trigger)
+                return successMessage;
+
+            return "Ошибка: \"Ожидалось символьное значение\"";
+        }
+        #endregion
+
+        #region <строковое значение> → NS
+        public static string StringValueCheck(List<LexList> lexems)
+        {
+            bool trigger = false;
+
+            if (String.Equals(lexems[pos].type, stringNumber))
+            {
+                trigger = true;
+            }
+
+            if (trigger)
+                return successMessage;
+
+            return "Ошибка: \"Ожидалось строковое значение\"";
+        }
+        #endregion
+
         #region <значение> → <число> | <строковое значение> | <символьное значение> | <логическое значение>
         //Пока-что только числа
         public static string ValueCheck(List<LexList> lexems)
         {
             string check = NumberValueCheck(lexems);
             if (!String.Equals(check, successMessage))
-                return check;
+                return successMessage;
 
-            return successMessage;
+            check = CharValueCheck(lexems);
+            if (!String.Equals(check, successMessage))
+                return successMessage;
+
+            check = StringValueCheck(lexems);
+            if (!String.Equals(check, successMessage))
+                return successMessage;
+
+            check = LogicalValueCheck(lexems);
+            if (!String.Equals(check, successMessage))
+                return successMessage;
+
+            return check;
         }
         #endregion
     }

@@ -218,6 +218,5 @@ namespace JavaInPythonTranslator
         }
         #endregion
 
-
     }
 }

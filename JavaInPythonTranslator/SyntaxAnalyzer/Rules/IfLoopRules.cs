@@ -189,7 +189,7 @@ namespace JavaInPythonTranslator
         }
         #endregion
 
-        #region <do-while-цикл> -> do {<тело цикла>} while (<логическое выражение>); | 
+        #region <do-while-цикл> -> do {<тело цикла>} while (<логическое выражение>);
         static string doWhileCheck(List<LexList> lexems, List<TreeNode> treeNodes)
         {
             string check;
@@ -286,6 +286,7 @@ namespace JavaInPythonTranslator
             check = ExpressionRules.logicalCheck(lexems, treeNode1);
             if (!String.Equals(check, successMessage))
                 return check;
+            pos++;
 
             //Проверяем закрывающую скобку )
             check = compare(lexems[pos].type, D7);

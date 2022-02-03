@@ -11,5 +11,10 @@
     /// </summary>
     internal class SemanticAnalyzer
     {
+        public static bool semanticAnalyzingStart(List<TreeNode> treeNodes)
+        {
+
+            return true;
+        }
     }
 }

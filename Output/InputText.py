@@ -3,7 +3,7 @@
 def main():
 	a = 25 
 	System.out.println ( a + a * ++ a , a ) 
-	if ( a >= true ) :
+	if ( a >= ! true && true ) :
 	a += 
 	25 
 	
