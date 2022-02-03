@@ -109,6 +109,8 @@
             file.WriteLine("\tmain()");
         }
 
+        static List<TreeNode> loopBody = new List<TreeNode>();
+
         // Трансляция Java в Python
         // В параметрах - список нод и индекс обрабатываемой ноды, т.к. возможно потребуется доступ к содержимому других нод
         // Поэтому работать с объектом treeNode не вариант
@@ -137,6 +139,76 @@
                         return "def main()";
                     }
                     return treeNodes[i].lexem.value + " ";
+
+                // while
+                case "K9":
+                    // проверяем, что это цикл "while(){}"
+                    if ((i + 4 < size) && (treeNodes[i + 4].lexem.type == "D4"))
+                    {
+                        inBodyStack.Push("{");
+                        inParametersStack.Push("(");
+                        intOffset++;
+                        return treeNodes[i].lexem.value;
+                    }
+                    // цикл "do{}while()"
+                    // здесь тело цикла уже было записано 1 раз.
+                    // теперь надо записать while(){}
+                    i += 2;
+                    List<TreeNode> whileCondition = treeNodes[i].nextLevelNodes;
+                    String whileConditionString = "";
+                    for (int j = 0; j < whileCondition.Count; j++)
+                        whileConditionString += Translate(whileCondition, ref j, whileCondition.Count);
+                    i++;
+                    inBodyStack.Push("{");
+                    intOffset++;
+
+                    String newLoopBodyString = "";
+                    translatePart(loopBody, ref newLoopBodyString);
+                    String whileBodyString = stringOffset() + newLoopBodyString;
+                    intOffset--;
+                    return "while(" + whileConditionString + "):\n" + whileBodyString;
+
+                // do
+                case "K10":
+                    // транслируем "do{}while() в {}while(){}"
+                    loopBody = treeNodes[i + 2].nextLevelNodes;
+                    String loopBodyString = "";
+
+                    // читаем тело цикла
+                    // функция представляет собой чутка измененный Generate()
+                    translatePart(loopBody, ref loopBodyString);
+                    i += 3;
+                    // возвращаем тело цикла {}. Далее из основного Generate будет вызван Translate к while
+                    return loopBodyString;
+
+                // for
+                case "K11":
+                    // Да, хардкод, ибо синтаксический анализ позволяет :P
+
+                    String offset = stringOffset();
+                    intOffset++;
+                    inBodyStack.Push("{");
+                    inParametersStack.Push("(");
+                    // Аргументы цикла for (first; second; third)
+                    List<TreeNode> first = treeNodes[i + 2].nextLevelNodes;
+                    List<TreeNode> second = treeNodes[i + 4].nextLevelNodes;
+                    List<TreeNode> third = treeNodes[i + 6].nextLevelNodes;
+                    
+                    // Начальное условие, его надо отдельно записать, ибо Python...
+                    String firstString = first[0].lexem.value + 
+                        first[1].lexem.value +
+                        first[2].nextLevelNodes[0].lexem.value;
+
+                    // итератор, т.к. по грамматике может быть здесь выражение. надо обработать
+                    String thirdString = "";
+                    for (int j = 0; j < third.Count; j++)
+                        thirdString += Translate(third, ref j, third.Count);
+                    
+                    i += 6;
+                    return firstString + "\n" + offset + "for " + first[0].lexem.value + " in range(" +
+                        first[2].nextLevelNodes[0].lexem.value + ", " +
+                        second[2].lexem.value + ", " +
+                        thirdString + ")";
 
                 // if
                 case "K12":
@@ -302,6 +374,25 @@
                 return type + " ";
             // объявление переменной boolean a = 5
             return "";
+        }
+
+        static void translatePart(List<TreeNode> body, ref String result)
+        {
+            for (int j = 0; j < body.Count; j++)
+            {
+                inParametersCheck(body[j]);
+                if (body[j].nextLevelNodes != null)
+                {
+                    if (!inParametersStack.Contains("(") && !(operators.Contains(body[j - 1].lexem.type)))
+                    {
+                        result += "\n" + stringOffset();
+                    }
+
+                    translatePart(body[j].nextLevelNodes, ref result);
+                }
+                result += (String.Equals(body[j].lexem.value, "NewTree") ? "" : Translate(body, ref j, body.Count));
+            }
+
         }
     }
 }
