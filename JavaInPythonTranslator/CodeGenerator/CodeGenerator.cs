@@ -73,6 +73,12 @@
             return offset;
         }
 
+        // множество операторов, для которых в правой части могут быть ссылки на поддеревья синт. дерева
+        // обычно для новых поддеревьев пишется новая строка в выходном файле, но здесь это не требуется
+        // поэтому выделили след. мн-во исключений для перевода строки
+        static string[] operators = { "P1", "P2", "P3", "P4", "P5", "P6", "S1", "S2", "S3", "S4",
+         "S5", "S6", "L1", "L2", "U1", "U2","B1", "B2", "B3", "B4", "B5"};
+
         // Главная функция генератора кода
         public static void Generate(StreamWriter file, List<TreeNode> treeNodes) {
             
@@ -83,7 +89,8 @@
                 {
                     // новая строка
                     // если сейчас в лексемах - параметры функции, то отмена
-                    if (!inParametersStack.Contains("("))
+                    // если лексемы принадлежат множеству исключений operators. то отмена
+                    if (!inParametersStack.Contains("(") && !(operators.Contains(treeNodes[i-1].lexem.type)))
                     {
                         file.WriteLine();
                         file.Write(stringOffset());
@@ -101,6 +108,8 @@
             file.WriteLine("if __name__ == '__main__':");
             file.WriteLine("\tmain()");
         }
+
+        static List<TreeNode> loopBody = new List<TreeNode>();
 
         // Трансляция Java в Python
         // В параметрах - список нод и индекс обрабатываемой ноды, т.к. возможно потребуется доступ к содержимому других нод
@@ -131,6 +140,88 @@
                     }
                     return treeNodes[i].lexem.value + " ";
 
+                // while
+                case "K9":
+                    // проверяем, что это цикл "while(){}"
+                    if ((i + 4 < size) && (treeNodes[i + 4].lexem.type == "D4"))
+                    {
+                        inBodyStack.Push("{");
+                        inParametersStack.Push("(");
+                        intOffset++;
+                        return treeNodes[i].lexem.value;
+                    }
+                    // цикл "do{}while()"
+                    // здесь тело цикла уже было записано 1 раз.
+                    // теперь надо записать while(){}
+                    i += 2;
+                    List<TreeNode> whileCondition = treeNodes[i].nextLevelNodes;
+                    String whileConditionString = "";
+                    for (int j = 0; j < whileCondition.Count; j++)
+                        whileConditionString += Translate(whileCondition, ref j, whileCondition.Count);
+                    i++;
+                    inBodyStack.Push("{");
+                    intOffset++;
+
+                    String newLoopBodyString = "";
+                    translatePart(loopBody, ref newLoopBodyString);
+                    String whileBodyString = stringOffset() + newLoopBodyString;
+                    intOffset--;
+                    return "while(" + whileConditionString + "):\n" + whileBodyString;
+
+                // do
+                case "K10":
+                    // транслируем "do{}while() в {}while(){}"
+                    loopBody = treeNodes[i + 2].nextLevelNodes;
+                    String loopBodyString = "";
+
+                    // читаем тело цикла
+                    // функция представляет собой чутка измененный Generate()
+                    translatePart(loopBody, ref loopBodyString);
+                    i += 3;
+                    // возвращаем тело цикла {}. Далее из основного Generate будет вызван Translate к while
+                    return loopBodyString;
+
+                // for
+                case "K11":
+                    // Да, хардкод, ибо синтаксический анализ позволяет :P
+
+                    String offset = stringOffset();
+                    intOffset++;
+                    inBodyStack.Push("{");
+                    inParametersStack.Push("(");
+                    // Аргументы цикла for (first; second; third)
+                    List<TreeNode> first = treeNodes[i + 2].nextLevelNodes;
+                    List<TreeNode> second = treeNodes[i + 4].nextLevelNodes;
+                    List<TreeNode> third = treeNodes[i + 6].nextLevelNodes;
+                    
+                    // Начальное условие, его надо отдельно записать, ибо Python...
+                    String firstString = first[0].lexem.value + 
+                        first[1].lexem.value +
+                        first[2].nextLevelNodes[0].lexem.value;
+
+                    // итератор, т.к. по грамматике может быть здесь выражение. надо обработать
+                    String thirdString = "";
+                    for (int j = 0; j < third.Count; j++)
+                        thirdString += Translate(third, ref j, third.Count);
+                    
+                    i += 6;
+                    return firstString + "\n" + offset + "for " + first[0].lexem.value + " in range(" +
+                        first[2].nextLevelNodes[0].lexem.value + ", " +
+                        second[2].lexem.value + ", " +
+                        thirdString + ")";
+
+                // if
+                case "K12":
+                    inBodyStack.Push("{");
+                    inParametersStack.Push("(");
+                    intOffset++;
+                    return treeNodes[i].lexem.value;
+
+                // else
+                case "K13":
+                    inBodyStack.Push("{");
+                    intOffset++;
+                    return treeNodes[i].lexem.value;
 
                 // class
                 case "K14":
@@ -178,6 +269,14 @@
                 case "T8":
                     return typeTranslate(treeNodes, ref i, size, "str");
 
+                // true
+                case "A1":
+                    return "True";
+
+                // false
+                case "A2":
+                    return "False";
+
                 // ; 
                 case "D3":
                     // отбрасываем
@@ -203,7 +302,56 @@
                     inBodyStack.Pop();
                     return "";
 
-                
+                // (
+                case "D6":
+                    if (!inParametersStack.Contains("("))
+                        // если скобка "(" принадлежит функции ,не нужной для трансляции, то отбрасывается
+                        return "";
+                    return treeNodes[i].lexem.value;
+
+                // (
+                case "D7":
+                    if (!inParametersStack.Contains("("))
+                        // если скобка ")" принадлежит функции ,не нужной для трансляции, то отбрасывается
+                        return "";
+                    inParametersStack.Pop();
+                    return treeNodes[i].lexem.value;
+
+                // ++
+                case "U1":
+                    //В Python нет "++", поэтому заменим на скобку - ++a -> (a + 1)
+                    i++;
+                    return "(" + treeNodes[i].lexem.value + " + 1)";
+                // --
+                case "U2":
+                    i++;
+                    return "(" + treeNodes[i].lexem.value + " - 1)";
+
+                // ID
+                case "ID":
+                    // проверка на функцию вывода в консоль
+                    if ((String.Equals(treeNodes[i].lexem.value, "System.out.println")) ||
+                     (String.Equals(treeNodes[i].lexem.value, "System.out.print")))
+                    {
+                        inParametersStack.Push("(");
+                        return "print";
+                    }
+                    // проверка на операторы "<ID> ++" и "<ID> --"
+                    if (i + 1 < size)
+                    {
+                        if (treeNodes[i + 1].lexem.type == "U1")
+                        {
+                            i++;
+                            return "(" + treeNodes[i-1].lexem.value + " + 1)";
+                        }
+                        if (treeNodes[i + 1].lexem.type == "U2")
+                        {
+                            i++;
+                            return "(" + treeNodes[i - 1].lexem.value + " - 1)";
+                        }
+                    }
+                    return treeNodes[i].lexem.value + " ";
+
                 default:
                     return treeNodes[i].lexem.value + " ";
             }
@@ -217,15 +365,34 @@
             {
                 intOffset++;
                 inBodyStack.Push("{");
-                inParametersStack.Push("(");
-                i += 3;
-                return "def " + treeNodes[i + 1].lexem.value + "(";
+                
+                i += 2;
+                return "def " + treeNodes[i + 1].lexem.value;
             }
             // проверка на параметры func(boolean a, ...)
             if (inParametersStack.Contains("("))
                 return type + " ";
             // объявление переменной boolean a = 5
             return "";
+        }
+
+        static void translatePart(List<TreeNode> body, ref String result)
+        {
+            for (int j = 0; j < body.Count; j++)
+            {
+                inParametersCheck(body[j]);
+                if (body[j].nextLevelNodes != null)
+                {
+                    if (!inParametersStack.Contains("(") && !(operators.Contains(body[j - 1].lexem.type)))
+                    {
+                        result += "\n" + stringOffset();
+                    }
+
+                    translatePart(body[j].nextLevelNodes, ref result);
+                }
+                result += (String.Equals(body[j].lexem.value, "NewTree") ? "" : Translate(body, ref j, body.Count));
+            }
+
         }
     }
 }
