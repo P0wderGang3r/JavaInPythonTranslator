@@ -138,6 +138,18 @@
                     }
                     return treeNodes[i].lexem.value + " ";
 
+                // if
+                case "K12":
+                    inBodyStack.Push("{");
+                    inParametersStack.Push("(");
+                    intOffset++;
+                    return treeNodes[i].lexem.value;
+
+                // else
+                case "K13":
+                    inBodyStack.Push("{");
+                    intOffset++;
+                    return treeNodes[i].lexem.value;
 
                 // class
                 case "K14":
@@ -184,6 +196,14 @@
                 // string
                 case "T8":
                     return typeTranslate(treeNodes, ref i, size, "str");
+
+                // true
+                case "A1":
+                    return "True";
+
+                // false
+                case "A2":
+                    return "False";
 
                 // ; 
                 case "D3":
