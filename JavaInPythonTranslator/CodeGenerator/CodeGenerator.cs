@@ -271,11 +271,11 @@
 
                 // true
                 case "A1":
-                    return "True";
+                    return "True ";
 
                 // false
                 case "A2":
-                    return "False";
+                    return "False ";
 
                 // ; 
                 case "D3":
@@ -326,6 +326,22 @@
                 case "U2":
                     i++;
                     return "(" + treeNodes[i].lexem.value + " - 1)";
+
+                // !
+                case "U3":
+                    i++;
+                    String notString = "";
+                    notString = Translate(treeNodes, ref i, treeNodes.Count);
+                    return "(not " + notString + ") ";
+
+                // ||
+                case "L1":
+                    return "or ";
+
+                // !
+                case "L2":
+                    return "and ";
+
 
                 // ID
                 case "ID":

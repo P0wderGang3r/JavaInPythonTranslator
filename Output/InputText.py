@@ -3,9 +3,15 @@
 def main():
 	a = 25
 	print(a + a * (a + 1), a )
+<<<<<<< Updated upstream
 	if(a >= True):
 		a += 25
 
+=======
+	if(a >= (not True ) and True ):
+		a += 25 
+		
+>>>>>>> Stashed changes
 	else:
 		a = 20
 
