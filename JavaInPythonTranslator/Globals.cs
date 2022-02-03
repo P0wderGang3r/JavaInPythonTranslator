@@ -47,14 +47,14 @@
         public LexList lexem;
         public List<TreeNode> nextLevelNodes;
 
-        public TreeNode(string type, string value, List<TreeNode>? nextLevelNodes) : this()
+        public TreeNode(string type, string value, List<TreeNode> nextLevelNodes) : this()
         {
             lexem.type = type;
             lexem.value = value;
             this.nextLevelNodes = nextLevelNodes;
         }
 
-        public TreeNode(LexList lexem, List<TreeNode>? nextLevelNodes) : this()
+        public TreeNode(LexList lexem, List<TreeNode> nextLevelNodes) : this()
         {
             this.lexem = lexem;
             this.nextLevelNodes = nextLevelNodes;
