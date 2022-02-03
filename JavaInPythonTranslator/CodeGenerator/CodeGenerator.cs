@@ -1,8 +1,6 @@
 ﻿namespace JavaInPythonTranslator
 {
-    internal class CodeGenerator
-    {
-        /*
+    /*
          * ----------------------------------------------------------------------------------------
          * ----------------------------------Генератор кода----------------------------------------
          * 
@@ -11,7 +9,6 @@
          * входную программу на Java в программу на Python при помощи таблицы соотвествия.
          * 
          * ----------------------------------------------------------------------------------------
-         * -------------------------------------Пример---------------------------------------------
          * 
          * Есть нода дерева TreeNode в Globals
          * И есть корень дерева List<TreeNode>
@@ -38,5 +35,197 @@
          * 
          * 
          * */
+
+    internal static class CodeGenerator
+    {
+        // стек для работы с "(" и ")"
+        // если прямо сейчас обрабатываются параметры функции, то в стек спушится "("
+        // если скобка ")" закрылась (закончили обрабатываться параметры), то из стека удаляется "("
+        static Stack<string> inParametersStack = new Stack<string>(); 
+
+        // функция проверяет, есть ли лексема с "(" и ")", то есть проверка на то, что
+        // текущие лексемы принадлежат параметрам функции/команды.
+        static void inParametersCheck(TreeNode treeNode) { 
+
+            switch (treeNode.lexem.type) {
+
+                // "("
+                case "D6":
+                    inParametersStack.Push("(");
+                    break;
+
+                // ")"
+                case "D7":
+                    inParametersStack.Pop();
+                    break;
+            }
+        }
+
+        // стек для работы с "{" и "}"
+        static Stack<string> inBodyStack = new Stack<string>();
+
+        // Отступ строки (для функций)
+        static int intOffset = 0;
+
+        static string stringOffset() {
+            string offset = "";
+            for (int i = 1; i <= intOffset; i++) offset += "\t";
+            return offset;
+        }
+
+        // Главная функция генератора кода
+        public static void Generate(StreamWriter file, List<TreeNode> treeNodes) {
+            
+            for (int i = 0; i < treeNodes.Count; i++)
+            {
+                inParametersCheck(treeNodes[i]);
+                if (treeNodes[i].nextLevelNodes != null)
+                {
+                    // новая строка
+                    // если сейчас в лексемах - параметры функции, то отмена
+                    if (!inParametersStack.Contains("("))
+                    {
+                        file.WriteLine();
+                        file.Write(stringOffset());
+                    }
+
+                    Generate(file, treeNodes[i].nextLevelNodes);
+                }
+                file.Write(String.Equals(treeNodes[i].lexem.value, "NewTree") ? "" : Translate(treeNodes, ref i, treeNodes.Count));
+            }
+        }
+
+        // добавление в файл 'if __name__=="__main__": main()'
+        public static void addMainFunctionCall(StreamWriter file) {
+            file.WriteLine();
+            file.WriteLine("if __name__ == '__main__':");
+            file.WriteLine("\tmain()");
+        }
+
+        // Трансляция Java в Python
+        // В параметрах - список нод и индекс обрабатываемой ноды, т.к. возможно потребуется доступ к содержимому других нод
+        // Поэтому работать с объектом treeNode не вариант
+        static string Translate(List<TreeNode> treeNodes, ref int i, int size) {
+           
+            switch (treeNodes[i].lexem.type)
+            {
+                // import
+                case "K1":
+                    if ((i + 1 < size) && (treeNodes[i + 1].lexem.value == "java.lang.Math"))
+                    {
+                        //если import math, то отбросить
+                        i++;
+                        return "";
+                    }
+                    return treeNodes[i].lexem.value + " ";
+
+                // public
+                case "K2":
+                    // проверка на главную функцию public static void main(String [] args)
+                    if ((i + 3 < size) && (treeNodes[i + 3].lexem.type == "K7"))
+                    {
+                        intOffset++;
+                        inBodyStack.Push("{");
+                        i += 9;
+                        return "def main()";
+                    }
+                    return treeNodes[i].lexem.value + " ";
+
+
+                // class
+                case "K14":
+                    if ((i + 1 < size) && (treeNodes[i + 1].lexem.type == "K6"))
+                    {
+                        // если это class Main, то отбросить
+                        // в стек "{" не добавляем
+                        i++;
+                        return "";
+                    }
+                    
+                    // если класс транслируется, то запушить в стек "{"
+                    inBodyStack.Push("{");
+                    return treeNodes[i].lexem.value + " ";
+
+                // boolean
+                case "T1":
+                    return typeTranslate(treeNodes, ref i, size, "bool");
+
+                // byte
+                case "T2":
+                    return typeTranslate(treeNodes, ref i, size, "bytes");
+
+                // short
+                case "T3":
+                    return typeTranslate(treeNodes, ref i, size, "int");
+
+                // int
+                case "T4":
+                    return typeTranslate(treeNodes, ref i, size, "int");
+
+                // float
+                case "T5":
+                    return typeTranslate(treeNodes, ref i, size, "float");
+
+                // double
+                case "T6":
+                    return typeTranslate(treeNodes, ref i, size, "double");
+
+                // char
+                case "T7":
+                    return typeTranslate(treeNodes, ref i, size, "str");
+
+                // string
+                case "T8":
+                    return typeTranslate(treeNodes, ref i, size, "str");
+
+                // ; 
+                case "D3":
+                    // отбрасываем
+                    return "";
+
+                // {
+                case "D4":
+                    if (!inBodyStack.Contains("{"))
+                        // если скобка "{" принадлежит функции ,не нужной для трансляции, то отбрасывается
+                        return "";
+
+                    // если скобка "{" указывает на тело транслируемой функции, то ":"
+                    return ":";
+
+                // }
+                case "D5":
+                    if (!inBodyStack.Contains("{"))
+                        // если скобка "}" принадлежит функции ,не нужной для трансляции, то отбрасывается
+                        return "";
+
+                    // если скобка "}" указывает на тело транслируемой функции, то убрать скобку из стека
+                    intOffset--;
+                    inBodyStack.Pop();
+                    return "";
+
+                
+                default:
+                    return treeNodes[i].lexem.value + " ";
+            }
+        }
+
+        // Трансляция типов
+        static string typeTranslate(List<TreeNode> treeNodes, ref int i, int size, String type) {
+            // проверка на функцию
+            // например, boolean func (...){...}
+            if ((i + 2 < size) && (treeNodes[i + 2].lexem.type == "D6")) // "("
+            {
+                intOffset++;
+                inBodyStack.Push("{");
+                inParametersStack.Push("(");
+                i += 3;
+                return "def " + treeNodes[i + 1].lexem.value + "(";
+            }
+            // проверка на параметры func(boolean a, ...)
+            if (inParametersStack.Contains("("))
+                return type + " ";
+            // объявление переменной boolean a = 5
+            return "";
+        }
     }
 }
