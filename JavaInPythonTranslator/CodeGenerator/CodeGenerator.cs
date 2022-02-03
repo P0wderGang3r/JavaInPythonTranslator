@@ -98,7 +98,7 @@
         // добавление в файл 'if __name__=="__main__": main()'
         public static void addMainFunctionCall(StreamWriter file) {
             file.WriteLine();
-            file.WriteLine("if __name__=='__main__':");
+            file.WriteLine("if __name__ == '__main__':");
             file.WriteLine("\tmain()");
         }
 
@@ -129,7 +129,7 @@
                         i += 9;
                         return "def main()";
                     }
-                    return "";
+                    return treeNodes[i].lexem.value + " ";
 
 
                 // class
@@ -145,6 +145,38 @@
                     // если класс транслируется, то запушить в стек "{"
                     inBodyStack.Push("{");
                     return treeNodes[i].lexem.value + " ";
+
+                // boolean
+                case "T1":
+                    return typeTranslate(treeNodes, ref i, size, "bool");
+
+                // byte
+                case "T2":
+                    return typeTranslate(treeNodes, ref i, size, "bytes");
+
+                // short
+                case "T3":
+                    return typeTranslate(treeNodes, ref i, size, "int");
+
+                // int
+                case "T4":
+                    return typeTranslate(treeNodes, ref i, size, "int");
+
+                // float
+                case "T5":
+                    return typeTranslate(treeNodes, ref i, size, "float");
+
+                // double
+                case "T6":
+                    return typeTranslate(treeNodes, ref i, size, "double");
+
+                // char
+                case "T7":
+                    return typeTranslate(treeNodes, ref i, size, "str");
+
+                // string
+                case "T8":
+                    return typeTranslate(treeNodes, ref i, size, "str");
 
                 // ; 
                 case "D3":
@@ -175,8 +207,25 @@
                 default:
                     return treeNodes[i].lexem.value + " ";
             }
-            
+        }
 
+        // Трансляция типов
+        static string typeTranslate(List<TreeNode> treeNodes, ref int i, int size, String type) {
+            // проверка на функцию
+            // например, boolean func (...){...}
+            if ((i + 2 < size) && (treeNodes[i + 2].lexem.type == "D6")) // "("
+            {
+                intOffset++;
+                inBodyStack.Push("{");
+                inParametersStack.Push("(");
+                i += 3;
+                return "def " + treeNodes[i + 1].lexem.value + "(";
+            }
+            // проверка на параметры func(boolean a, ...)
+            if (inParametersStack.Contains("("))
+                return type + " ";
+            // объявление переменной boolean a = 5
+            return "";
         }
     }
 }
