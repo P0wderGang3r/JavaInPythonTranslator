@@ -16,6 +16,7 @@ System.out.println ( a * a )
 
 while ( a > 0 ) 
 System.out.println ( a * a ) 
+break 
 
 do 
 System.out.println ( a * a ) 

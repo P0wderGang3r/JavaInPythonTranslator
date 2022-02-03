@@ -261,14 +261,6 @@ namespace JavaInPythonTranslator
         }
         #endregion
 
-        #region <тело цикла> → <оператор цикла> <блок кода> | <блок кода> | <оператор цикла>
-        static string bodyLoopCheck(List<LexList> lexems)
-        {
-
-            return "success";
-        }
-        #endregion
-
         #region <ветвление> → if (<логическое выражение>) {<блок кода>} | if (<логическое выражение>) {<блок кода>} <иначе-ветвление>
         public static string ifCheck(List<LexList> lexems, List<TreeNode> treeNodes)
         {
