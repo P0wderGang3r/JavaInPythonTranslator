@@ -73,6 +73,12 @@
             return offset;
         }
 
+        // множество операторов, для которых в правой части могут быть ссылки на поддеревья синт. дерева
+        // обычно для новых поддеревьев пишется новая строка в выходном файле, но здесь это не требуется
+        // поэтому выделили след. мн-во исключений для перевода строки
+        static string[] operators = { "P1", "P2", "P3", "P4", "P5", "P6", "S1", "S2", "S3", "S4",
+         "S5", "S6", "L1", "L2", "U1", "U2","B1", "B2", "B3", "B4", "B5"};
+
         // Главная функция генератора кода
         public static void Generate(StreamWriter file, List<TreeNode> treeNodes) {
             
@@ -83,7 +89,8 @@
                 {
                     // новая строка
                     // если сейчас в лексемах - параметры функции, то отмена
-                    if (!inParametersStack.Contains("("))
+                    // если лексемы принадлежат множеству исключений operators. то отмена
+                    if (!inParametersStack.Contains("(") && !(operators.Contains(treeNodes[i-1].lexem.type)))
                     {
                         file.WriteLine();
                         file.Write(stringOffset());
@@ -203,7 +210,56 @@
                     inBodyStack.Pop();
                     return "";
 
-                
+                // (
+                case "D6":
+                    if (!inParametersStack.Contains("("))
+                        // если скобка "(" принадлежит функции ,не нужной для трансляции, то отбрасывается
+                        return "";
+                    return treeNodes[i].lexem.value;
+
+                // (
+                case "D7":
+                    if (!inParametersStack.Contains("("))
+                        // если скобка ")" принадлежит функции ,не нужной для трансляции, то отбрасывается
+                        return "";
+                    inParametersStack.Pop();
+                    return treeNodes[i].lexem.value;
+
+                // ++
+                case "U1":
+                    //В Python нет "++", поэтому заменим на скобку - ++a -> (a + 1)
+                    i++;
+                    return "(" + treeNodes[i].lexem.value + " + 1)";
+                // --
+                case "U2":
+                    i++;
+                    return "(" + treeNodes[i].lexem.value + " - 1)";
+
+                // ID
+                case "ID":
+                    // проверка на функцию вывода в консоль
+                    if ((String.Equals(treeNodes[i].lexem.value, "System.out.println")) ||
+                     (String.Equals(treeNodes[i].lexem.value, "System.out.print")))
+                    {
+                        inParametersStack.Push("(");
+                        return "print";
+                    }
+                    // проверка на операторы "<ID> ++" и "<ID> --"
+                    if (i + 1 < size)
+                    {
+                        if (treeNodes[i + 1].lexem.type == "U1")
+                        {
+                            i++;
+                            return "(" + treeNodes[i-1].lexem.value + " + 1)";
+                        }
+                        if (treeNodes[i + 1].lexem.type == "U2")
+                        {
+                            i++;
+                            return "(" + treeNodes[i - 1].lexem.value + " - 1)";
+                        }
+                    }
+                    return treeNodes[i].lexem.value + " ";
+
                 default:
                     return treeNodes[i].lexem.value + " ";
             }
@@ -217,9 +273,9 @@
             {
                 intOffset++;
                 inBodyStack.Push("{");
-                inParametersStack.Push("(");
-                i += 3;
-                return "def " + treeNodes[i + 1].lexem.value + "(";
+                
+                i += 2;
+                return "def " + treeNodes[i + 1].lexem.value;
             }
             // проверка на параметры func(boolean a, ...)
             if (inParametersStack.Contains("("))
