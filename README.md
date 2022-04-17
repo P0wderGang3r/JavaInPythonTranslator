@@ -22,8 +22,5 @@
 <li> Морфологический анализатор </li>
 <li> Генератор кода </li>
 
-## Ссылка на страницу проекта в баг-трекере
-https://p0wdecl0ud.youtrack.cloud/articles/JIPT-A-3/
-
 ## Ссылка на папку с документами
 https://1drv.ms/u/s!Al4u43F0FsT5lzi_ENanTVz7PxXd?e=VrOPrK
